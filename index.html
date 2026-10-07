@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
 <meta name="theme-color" content="#0f172a">
-<title>S. Muhammad Rafi Milk Parlour — Admin</title>
+<title>S. Muhammad Rafi Milk Parlar — Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,7 +38,6 @@ img,svg,table{max-width:100%}
 *{max-width:100%}
 .hidden{display:none!important}
 
-/* LOGIN */
 .auth-shell{min-height:100vh;display:grid;grid-template-columns:1fr;background:var(--slate-900);position:relative;overflow:hidden}
 @media(min-width:900px){.auth-shell{grid-template-columns:1fr 1fr}}
 .auth-brand{display:none;position:relative;padding:3rem;color:#fff;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 40%,#1e293b 100%);overflow:hidden}
@@ -191,6 +190,8 @@ td.text-center{text-align:center}
 .btn-icon-text.edit:hover{background:var(--brand-50);border-color:var(--brand-200)}
 .btn-icon-text.success{color:var(--success-600)}
 .btn-icon-text.success:hover{background:var(--success-50);border-color:var(--success-100)}
+.btn-icon-text.warn{color:var(--warning-700)}
+.btn-icon-text.warn:hover{background:var(--warning-50);border-color:var(--warning-100)}
 .btn-icon-text.danger{color:var(--danger-600)}
 .btn-icon-text.danger:hover{background:var(--danger-50);border-color:var(--danger-100)}
 
@@ -293,6 +294,19 @@ td.text-center{text-align:center}
 .form-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
 .form-grid .span-2{grid-column:span 2}
 
+/* EDIT BILL MODAL */
+.edit-bill-box{max-width:900px!important}
+.edit-bill-top{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
+.edit-bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.edit-bill-products{display:flex;flex-direction:column;gap:.75rem;min-height:280px}
+.edit-bill-product-list{flex:1;overflow-y:auto;max-height:340px;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:.5rem;background:var(--slate-50);border-radius:var(--radius);padding:.6rem}
+.edit-bill-cart{background:var(--slate-50);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;min-height:280px}
+.edit-bill-cart-head{padding:.7rem .9rem;border-bottom:1px solid var(--slate-200);font-weight:600;font-size:.82rem;color:var(--slate-700);display:flex;justify-content:space-between;align-items:center}
+.edit-bill-cart-head span{font-size:.7rem;font-weight:500;color:var(--slate-500);background:#fff;padding:.1rem .5rem;border-radius:999px;border:1px solid var(--slate-200)}
+.edit-bill-cart-body{flex:1;overflow-y:auto;max-height:220px;background:#fff}
+.edit-bill-cart-foot{padding:.75rem .9rem;border-top:1px solid var(--slate-200);background:#fff}
+.edit-bill-cart-foot .total-row{font-size:.8rem;padding:.15rem 0}
+
 .pay-methods{display:grid;gap:.5rem;grid-template-columns:repeat(3,1fr);margin-top:.4rem}
 .pay-option{position:relative;cursor:pointer}
 .pay-option input{position:absolute;opacity:0;pointer-events:none}
@@ -343,13 +357,11 @@ td.text-center{text-align:center}
 .spinner{width:32px;height:32px;border:3px solid var(--slate-200);border-top-color:var(--brand-600);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* BILL HISTORY — MOBILE CARD LAYOUT */
 .bills-mobile{display:none}
 
 @media(max-width:768px){
   .bills-table-wrap{display:none!important}
   .bills-mobile{display:flex;flex-direction:column;gap:.75rem;padding:1rem}
-
   .bill-card{border:1px solid var(--slate-200);border-radius:12px;padding:1rem;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.03)}
   .bill-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;margin-bottom:.55rem}
   .bill-card-no{font-size:.95rem;font-weight:700;color:var(--slate-900);letter-spacing:-.01em}
@@ -358,7 +370,7 @@ td.text-center{text-align:center}
   .bill-card-customer{font-size:.92rem;color:var(--slate-700);font-weight:500;margin-bottom:.65rem;line-height:1.35;overflow-wrap:anywhere}
   .bill-card-meta{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding-bottom:.7rem;margin-bottom:.7rem;border-bottom:1px solid var(--slate-100)}
   .bill-card-items{font-size:.75rem;color:var(--slate-500);margin-left:auto;white-space:nowrap}
-  .bill-card-actions{display:flex;gap:.5rem}
+  .bill-card-actions{display:flex;gap:.5rem;flex-wrap:wrap}
   .bill-card-actions .btn-icon-text{flex:1;justify-content:center;padding:.55rem .5rem;font-size:.8rem;white-space:nowrap;min-width:0}
 }
 
@@ -388,6 +400,9 @@ td.text-center{text-align:center}
   .modal-head{padding:1rem 1.15rem}
   .modal-body{padding:1.15rem}
   .modal-foot{padding:.85rem 1.15rem}
+  .edit-bill-top{grid-template-columns:1fr}
+  .edit-bill-grid{grid-template-columns:1fr}
+  .edit-bill-box{max-width:100%!important}
 }
 
 @media(max-width:640px){
@@ -459,7 +474,7 @@ td.text-center{text-align:center}
         <div class="auth-logo-mark">MR</div>
         <div>
           <div style="font-size:.95rem;font-weight:600;letter-spacing:-.01em">S. Muhammad Rafi</div>
-          <div style="font-size:.72rem;color:#a5b4fc;text-transform:uppercase;letter-spacing:.1em">Milk Parlour</div>
+          <div style="font-size:.72rem;color:#a5b4fc;text-transform:uppercase;letter-spacing:.1em">Milk Parlar</div>
         </div>
       </div>
     </div>
@@ -478,7 +493,7 @@ td.text-center{text-align:center}
         <div class="auth-logo-mark" style="width:32px;height:32px;font-size:.7rem">MR</div>
         <div>
           <div style="font-size:.85rem">S. Muhammad Rafi</div>
-          <div style="font-size:.68rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.1em">Milk Parlour</div>
+          <div style="font-size:.68rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.1em">Milk Parlar</div>
         </div>
       </div>
       <h1>Welcome back</h1>
@@ -503,7 +518,7 @@ td.text-center{text-align:center}
         <div class="sidebar-brand-mark">MR</div>
         <div class="sidebar-brand-text">
           <div class="name">S. Muhammad Rafi</div>
-          <div class="role">Milk Parlour</div>
+          <div class="role">Milk Parlar</div>
         </div>
       </div>
     </div>
@@ -811,6 +826,61 @@ td.text-center{text-align:center}
   </div>
 </div>
 
+<!-- EDIT BILL MODAL -->
+<div class="modal" id="editBillModal">
+  <div class="modal-box edit-bill-box">
+    <div class="modal-head">
+      <h3>Edit Bill <span id="editBillNo" style="color:var(--brand-600)"></span></h3>
+      <button class="modal-close" data-close-modal="editBillModal" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="edit-bill-top">
+        <div class="field" style="margin-bottom:0">
+          <label for="editBillCustomer">Customer name</label>
+          <input type="text" id="editBillCustomer" class="input" placeholder="Walk-in">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label for="editBillPayment">Payment method</label>
+          <select id="editBillPayment" class="input">
+            <option value="Cash">Cash</option>
+            <option value="UPI">UPI</option>
+            <option value="Credit">Credit (Pay Later)</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="edit-bill-grid">
+        <div class="edit-bill-products">
+          <div class="input-group">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="text" id="editBillProductSearch" class="input" placeholder="Search products to add...">
+          </div>
+          <div class="edit-bill-product-list" id="editBillProductList"></div>
+        </div>
+        <div class="edit-bill-cart">
+          <div class="edit-bill-cart-head">
+            <span style="font-weight:600;font-size:.82rem;color:var(--slate-700)">Bill Items</span>
+            <span id="editBillCartCount">0 items</span>
+          </div>
+          <div class="edit-bill-cart-body" id="editBillCartBody"></div>
+          <div class="edit-bill-cart-foot">
+            <div class="total-row"><span>Subtotal</span><span id="editBillSubtotal">₹0</span></div>
+            <div class="total-row discount">
+              <span>Discount (₹)</span>
+              <input type="number" id="editBillDiscount" value="0" min="0">
+            </div>
+            <div class="total-row grand" style="font-size:1rem;padding-top:.5rem;margin-top:.3rem"><span>Total</span><span id="editBillTotal">₹0</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" data-close-modal="editBillModal">Cancel</button>
+      <button class="btn btn-primary" id="editBillSaveBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg> Save Changes</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="deleteBillModal">
   <div class="modal-box" style="max-width:440px">
     <div class="modal-head"><h3>Delete Bill</h3><button class="modal-close" data-close-modal="deleteBillModal" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
@@ -901,7 +971,7 @@ function mapBill(b){
   };
 }
 function mapSettings(s){
-  return { shopName: s.shop_name || 'S. MUHAMMAD RAFI MILK PARLOUR', address: s.address || '', phone: s.phone || '', upiId: s.upi_id || '', nextBillNo: Number(s.next_bill_no) || 1001 };
+  return { shopName: s.shop_name || 'S. MUHAMMAD RAFI MILK PARLAR', address: s.address || '', phone: s.phone || '', upiId: s.upi_id || '', nextBillNo: Number(s.next_bill_no) || 1001 };
 }
 
 const DB = {
@@ -996,6 +1066,54 @@ const DB = {
       total: Number(billRow.total), payment: billRow.payment, status: billRow.status, shop: settings,
     };
   },
+  async updateBill(id, d){
+    // Fetch old bill with items
+    const { data: oldBill, error: obErr } = await sb.from('bills')
+      .select('*, items:bill_items(*)').eq('id', id).single();
+    if(obErr) throw obErr;
+    if(!oldBill) throw new Error('Bill not found');
+
+    // Restore old stock
+    for(const item of (oldBill.items || [])){
+      if(!item.product_id) continue;
+      try{
+        const { data: prod } = await sb.from('products').select('stock').eq('id', item.product_id).single();
+        if(!prod) continue;
+        await sb.from('products').update({ stock: Number(prod.stock || 0) + Number(item.qty || 0) }).eq('id', item.product_id);
+      } catch(e){ console.warn('Stock restore failed', e); }
+    }
+
+    // Compute new totals
+    const lineItems = d.items.map(it => ({
+      product_id: it.productId, name: it.name, price: Number(it.price), qty: Number(it.qty),
+      unit: it.unit || '', subtotal: Number(it.price) * Number(it.qty),
+    }));
+    const subtotal = lineItems.reduce((s, i) => s + i.subtotal, 0);
+    const discount = Number(d.discount || 0);
+    const total = Math.max(0, subtotal - discount);
+    const payment = d.payment || 'Cash';
+    const status = payment === 'Credit' ? 'PENDING' : 'PAID';
+
+    // Update bill header
+    const { error: uErr } = await sb.from('bills').update({
+      customer: (d.customer || '').trim() || 'Walk-in',
+      subtotal, discount, total, payment, status,
+    }).eq('id', id);
+    if(uErr) throw uErr;
+
+    // Replace items
+    await sb.from('bill_items').delete().eq('bill_id', id);
+    const itemsToInsert = lineItems.map(it => Object.assign({}, it, { bill_id: id }));
+    const { error: iErr } = await sb.from('bill_items').insert(itemsToInsert);
+    if(iErr) throw iErr;
+
+    // Deduct new stock
+    for(const it of lineItems){
+      const { error: sErr } = await sb.rpc('decrement_stock', { p_product_id: it.product_id, p_qty: it.qty });
+      if(sErr) console.warn('Stock decrement failed', sErr);
+    }
+    return true;
+  },
   async settleCredit(id, method){
     const { error } = await sb.from('bills').update({ payment: method, status: 'PAID' }).eq('id', id);
     if(error) throw error;
@@ -1004,7 +1122,7 @@ const DB = {
     const { data: bill, error: bErr } = await sb.from('bills').select('*, items:bill_items(*)').eq('id', id).single();
     if(bErr) throw bErr;
     if(!bill) throw new Error('Bill not found');
-    for(const item of (bill.items || bill.bill_items || [])){
+    for(const item of (bill.items || [])){
       if(!item.product_id) continue;
       try{
         const { data: prod } = await sb.from('products').select('stock').eq('id', item.product_id).single();
@@ -1230,7 +1348,6 @@ function renderCart(){
     box.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { cart.splice(+b.dataset.del, 1); renderCart(); });
     box.querySelectorAll('[data-edit-price]').forEach(b => b.onclick = () => openPriceEdit(+b.dataset.editPrice));
 
-    // Type-able quantity input
     box.querySelectorAll('[data-qty]').forEach(input => {
       input.addEventListener('input', e => {
         const i = +e.target.dataset.qty;
@@ -1599,7 +1716,12 @@ async function renderBillsPage(){
         <td><span class="badge ${payBadge}">${esc(b.payment)}</span></td>
         <td><span class="badge ${statusBadge}">${statusLabel}</span></td>
         <td class="text-end td-strong">${fmt(b.total)}</td>
-        <td class="text-end"><div class="actions">${isPending ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Paid</button>` : ''}<button class="btn-icon-text edit" data-view="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button><button class="btn-icon-text danger" data-delete="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button></div></td>
+        <td class="text-end"><div class="actions">
+          ${isPending ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Paid</button>` : ''}
+          <button class="btn-icon-text warn" data-edit-bill="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          <button class="btn-icon-text edit" data-view="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button>
+          <button class="btn-icon-text danger" data-delete="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button>
+        </div></td>
       </tr>`;
     }).join('');
   }
@@ -1636,38 +1758,16 @@ async function renderBillsPage(){
             </div>
             <div class="bill-card-actions">
               ${isPending ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Paid</button>` : ''}
+              <button class="btn-icon-text warn" data-edit-bill="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
               <button class="btn-icon-text edit" data-view="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button>
               <button class="btn-icon-text danger" data-delete="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button>
             </div>
           </div>`;
       }).join('');
     }
-    mobile.querySelectorAll('[data-view]').forEach(btn => btn.onclick = async () => {
-      try{ const b = await DB.getBillById(btn.dataset.view); b.shop = await DB.getSettings(); showReceipt(b, 'Bill #' + b.billNo); }
-      catch(e){ toast('Failed', 'error'); }
-    });
-    mobile.querySelectorAll('[data-settle]').forEach(btn => btn.onclick = async () => {
-      try{ const b = await DB.getBillById(btn.dataset.settle); openSettleCredit(b); }
-      catch(e){ toast('Failed', 'error'); }
-    });
-    mobile.querySelectorAll('[data-delete]').forEach(btn => btn.onclick = async () => {
-      try{ const b = await DB.getBillById(btn.dataset.delete); b.shop = await DB.getSettings(); openDeleteBill(b); }
-      catch(e){ toast('Failed', 'error'); }
-    });
+    wireBillActions(mobile);
   }
-
-  tbody.querySelectorAll('[data-view]').forEach(btn => btn.onclick = async () => {
-    try{ const b = await DB.getBillById(btn.dataset.view); b.shop = await DB.getSettings(); showReceipt(b, 'Bill #' + b.billNo); }
-    catch(e){ toast('Failed', 'error'); }
-  });
-  tbody.querySelectorAll('[data-settle]').forEach(btn => btn.onclick = async () => {
-    try{ const b = await DB.getBillById(btn.dataset.settle); openSettleCredit(b); }
-    catch(e){ toast('Failed', 'error'); }
-  });
-  tbody.querySelectorAll('[data-delete]').forEach(btn => btn.onclick = async () => {
-    try{ const b = await DB.getBillById(btn.dataset.delete); b.shop = await DB.getSettings(); openDeleteBill(b); }
-    catch(e){ toast('Failed', 'error'); }
-  });
+  wireBillActions(tbody);
 
   const total = list.reduce((s, b) => s + b.total, 0);
   const pendingTotal = list.filter(b => b.status === 'PENDING').reduce((s, b) => s + b.total, 0);
@@ -1675,11 +1775,242 @@ async function renderBillsPage(){
   if(pendingTotal > 0) summary += ` · ${fmt(pendingTotal)} pending`;
   $('#billsSummary').textContent = summary;
 }
+
+function wireBillActions(root){
+  root.querySelectorAll('[data-view]').forEach(btn => btn.onclick = async () => {
+    try{ const b = await DB.getBillById(btn.dataset.view); b.shop = await DB.getSettings(); showReceipt(b, 'Bill #' + b.billNo); }
+    catch(e){ toast('Failed', 'error'); }
+  });
+  root.querySelectorAll('[data-settle]').forEach(btn => btn.onclick = async () => {
+    try{ const b = await DB.getBillById(btn.dataset.settle); openSettleCredit(b); }
+    catch(e){ toast('Failed', 'error'); }
+  });
+  root.querySelectorAll('[data-edit-bill]').forEach(btn => btn.onclick = async () => {
+    try{ const b = await DB.getBillById(btn.dataset.editBill); b.shop = await DB.getSettings(); await openEditBill(b); }
+    catch(e){ console.error(e); toast('Failed to load bill', 'error'); }
+  });
+  root.querySelectorAll('[data-delete]').forEach(btn => btn.onclick = async () => {
+    try{ const b = await DB.getBillById(btn.dataset.delete); b.shop = await DB.getSettings(); openDeleteBill(b); }
+    catch(e){ toast('Failed', 'error'); }
+  });
+}
+
 ['billSearch','billDate','billPayment','billStatus'].forEach(id => {
   $('#'+id).addEventListener('input', renderBillsPage);
   $('#'+id).addEventListener('change', renderBillsPage);
 });
 
+/* ---------- EDIT BILL ---------- */
+let editBillId = null;
+let editCart = [];
+let editProductsCache = [];
+let editOriginalItems = [];
+
+async function openEditBill(bill){
+  editBillId = bill.id;
+  editCart = bill.items.map(it => ({
+    productId: it.productId,
+    name: it.name,
+    price: it.price,
+    originalPrice: it.price,
+    qty: it.qty,
+    unit: it.unit,
+  }));
+  editOriginalItems = bill.items.map(it => ({ productId: it.productId, qty: it.qty }));
+  editProductsCache = await DB.getProducts();
+
+  $('#editBillNo').textContent = '#' + bill.billNo;
+  $('#editBillCustomer').value = bill.customer;
+  $('#editBillPayment').value = bill.payment;
+  $('#editBillDiscount').value = bill.discount;
+  $('#editBillProductSearch').value = '';
+
+  renderEditBillProducts();
+  renderEditBillCart();
+  openModal('editBillModal');
+}
+
+function getEditAvailable(productId){
+  const p = editProductsCache.find(x => x.id === productId);
+  if(!p) return 0;
+  const origQty = editOriginalItems
+    .filter(it => it.productId === productId)
+    .reduce((s, it) => s + it.qty, 0);
+  return p.stock + origQty;
+}
+
+function renderEditBillProducts(filter){
+  filter = (filter || '').toLowerCase();
+  const box = $('#editBillProductList');
+  const list = editProductsCache.filter(p =>
+    p.name.toLowerCase().includes(filter) ||
+    (p.category || '').toLowerCase().includes(filter)
+  );
+  if(!list.length){
+    box.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-title">No products</div></div>';
+    return;
+  }
+  box.innerHTML = list.map(p => {
+    const avail = getEditAvailable(p.id);
+    const out = avail <= 0;
+    return `<div class="product-tile ${out ? 'disabled' : ''}" data-edit-add="${p.id}" style="padding:.65rem .55rem">
+      <div class="product-name" style="font-size:.78rem;min-height:auto">${esc(p.name)}</div>
+      <div class="product-price" style="font-size:.9rem">${fmt(p.price)}</div>
+      <div class="product-stock ${out ? 'out' : ''}" style="font-size:.68rem">${out ? 'No stock' : avail + ' available'}</div>
+    </div>`;
+  }).join('');
+  box.querySelectorAll('[data-edit-add]').forEach(t => {
+    t.onclick = () => addToEditCart(t.dataset.editAdd);
+  });
+}
+
+function addToEditCart(productId){
+  const p = editProductsCache.find(x => x.id === productId);
+  if(!p) return;
+  const avail = getEditAvailable(productId);
+  const ex = editCart.find(c => c.productId === productId);
+  const inCart = ex ? ex.qty : 0;
+  if(inCart + 1 > avail){ toast('Only ' + avail + ' available', 'error'); return; }
+  if(ex) ex.qty++;
+  else editCart.push({ productId: p.id, name: p.name, price: p.price, originalPrice: p.price, qty: 1, unit: p.unit });
+  renderEditBillCart();
+  renderEditBillProducts($('#editBillProductSearch').value);
+}
+
+function renderEditBillCart(){
+  const box = $('#editBillCartBody');
+  const count = editCart.reduce((s, c) => s + c.qty, 0);
+  $('#editBillCartCount').textContent = count + (count === 1 ? ' item' : ' items');
+  if(!editCart.length){
+    box.innerHTML = '<div class="empty" style="padding:1.5rem"><div class="empty-title" style="font-size:.82rem">No items in bill</div></div>';
+  } else {
+    box.innerHTML = editCart.map((c, i) => {
+      const isCustom = c.originalPrice != null && c.price !== c.originalPrice;
+      return `<div class="cart-line" style="padding:.6rem .9rem">
+        <div class="cart-line-main">
+          <div class="cart-line-name" style="font-size:.8rem">${esc(c.name)}</div>
+          <div class="price-meta">
+            <button class="price-edit-btn ${isCustom ? 'custom' : ''}" data-edit-ebprice="${i}">
+              ${fmt(c.price)}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            ${isCustom ? `<span class="price-original">${fmt(c.originalPrice)}</span>` : ''}
+            × ${c.qty} = <b>${fmt(c.price * c.qty)}</b>
+          </div>
+        </div>
+        <div class="qty">
+          <button data-eb-dec="${i}">−</button>
+          <input type="number" class="qty-input" data-eb-qty="${i}" value="${c.qty}" min="1" step="1" inputmode="numeric" style="width:40px;height:26px;font-size:.8rem">
+          <button data-eb-inc="${i}">+</button>
+          <button class="danger" data-eb-del="${i}">×</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    box.querySelectorAll('[data-eb-inc]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.ebInc;
+      const avail = getEditAvailable(editCart[i].productId);
+      if(editCart[i].qty + 1 > avail){ toast('Only ' + avail + ' available', 'error'); return; }
+      editCart[i].qty++;
+      renderEditBillCart();
+      renderEditBillProducts($('#editBillProductSearch').value);
+    });
+    box.querySelectorAll('[data-eb-dec]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.ebDec;
+      if(editCart[i].qty > 1) editCart[i].qty--; else editCart.splice(i, 1);
+      renderEditBillCart();
+      renderEditBillProducts($('#editBillProductSearch').value);
+    });
+    box.querySelectorAll('[data-eb-del]').forEach(b => b.onclick = () => {
+      editCart.splice(+b.dataset.ebDel, 1);
+      renderEditBillCart();
+      renderEditBillProducts($('#editBillProductSearch').value);
+    });
+    box.querySelectorAll('[data-edit-ebprice]').forEach(b => b.onclick = () => {
+      const i = +b.dataset.editEbprice;
+      const item = editCart[i];
+      if(!item) return;
+      $('#priceEditIndex').value = 'edit:' + i;
+      $('#priceEditName').textContent = item.name;
+      $('#priceEditDefault').textContent = fmt(item.originalPrice != null ? item.originalPrice : item.price);
+      $('#priceEditInput').value = item.price;
+      openModal('priceEditModal');
+      setTimeout(() => { const inp = $('#priceEditInput'); if(inp){ inp.focus(); inp.select(); } }, 150);
+    });
+    box.querySelectorAll('[data-eb-qty]').forEach(input => {
+      input.addEventListener('input', e => {
+        const i = +e.target.dataset.ebQty;
+        let val = parseInt(e.target.value, 10);
+        if(isNaN(val) || val < 1) val = 1;
+        const avail = getEditAvailable(editCart[i].productId);
+        if(val > avail){ val = avail; e.target.value = val; toast('Only ' + avail + ' available', 'error'); }
+        editCart[i].qty = val;
+        updateEditBillTotals();
+      });
+      input.addEventListener('blur', () => {
+        renderEditBillCart();
+        renderEditBillProducts($('#editBillProductSearch').value);
+      });
+      input.addEventListener('keydown', e => {
+        if(e.key === 'Enter'){ e.preventDefault(); e.target.blur(); }
+      });
+    });
+  }
+  updateEditBillTotals();
+}
+
+function updateEditBillTotals(){
+  const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
+  const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
+  $('#editBillSubtotal').textContent = fmt(sub);
+  $('#editBillTotal').textContent = fmt(Math.max(0, sub - disc));
+}
+
+$('#editBillProductSearch').addEventListener('input', e => renderEditBillProducts(e.target.value));
+$('#editBillDiscount').addEventListener('input', updateEditBillTotals);
+
+$('#editBillSaveBtn').addEventListener('click', async () => {
+  if(!editCart.length){ toast('Bill cannot be empty', 'error'); return; }
+  const btn = $('#editBillSaveBtn'); btn.disabled = true;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span>Saving...</span>';
+  try{
+    await DB.updateBill(editBillId, {
+      items: editCart.map(c => ({ productId: c.productId, name: c.name, price: c.price, qty: c.qty, unit: c.unit })),
+      discount: Number($('#editBillDiscount').value) || 0,
+      payment:  $('#editBillPayment').value,
+      customer: $('#editBillCustomer').value.trim(),
+    });
+    closeModal('editBillModal');
+    editBillId = null; editCart = []; editOriginalItems = [];
+    await renderBillsPage();
+    toast('Bill updated, stock adjusted', 'success');
+  } catch(e){
+    console.error(e);
+    toast('Failed: ' + (e.message || 'unknown'), 'error');
+    btn.disabled = false; btn.innerHTML = orig;
+  }
+});
+
+/* override price edit save to also handle edit modal */
+const originalSavePriceEdit = savePriceEdit;
+savePriceEdit = function(){
+  const raw = String($('#priceEditIndex').value);
+  if(raw.startsWith('edit:')){
+    const i = Number(raw.slice(5));
+    const newPrice = Number($('#priceEditInput').value);
+    if(!editCart[i]) return;
+    if(isNaN(newPrice) || newPrice < 0){ toast('Invalid price', 'error'); return; }
+    editCart[i].price = newPrice;
+    closeModal('priceEditModal');
+    renderEditBillCart();
+    toast('Price updated', 'success');
+    return;
+  }
+  originalSavePriceEdit();
+};
+
+/* ---------- SETTLE CREDIT ---------- */
 function openSettleCredit(bill){
   $('#settleBillId').value = bill.id;
   $('#settleBillNo').textContent = '#' + bill.billNo;
