@@ -168,6 +168,8 @@ tbody tr:hover{background:var(--slate-50)}
 td.text-end{text-align:right}
 td.text-center{text-align:center}
 .td-strong{color:var(--slate-900);font-weight:600}
+.td-balance{font-weight:700;color:var(--danger-600)}
+.td-balance.zero{color:var(--slate-400);font-weight:500}
 
 .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .55rem;font-size:.72rem;font-weight:500;border-radius:999px;letter-spacing:-.005em;white-space:nowrap}
 .badge::before{content:'';width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.9}
@@ -180,6 +182,7 @@ td.text-center{text-align:center}
 .badge-brand::before{display:none}
 .badge-credit{background:var(--warning-50);color:var(--warning-700);border:1px solid var(--warning-100)}
 .badge-pending{background:var(--warning-50);color:var(--warning-700);border:1px solid var(--warning-100)}
+.badge-partial{background:var(--brand-50);color:var(--brand-700);border:1px solid var(--brand-100)}
 .badge-paid{background:var(--success-50);color:var(--success-700);border:1px solid var(--success-100)}
 
 .actions{display:inline-flex;gap:.4rem;justify-content:flex-end;flex-wrap:wrap}
@@ -272,6 +275,51 @@ td.text-center{text-align:center}
 .customer-info{font-size:.72rem;color:var(--slate-500);margin-top:.35rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
 .customer-info b{color:var(--slate-700);font-weight:500}
 
+.customer-balance{
+  display:none;
+  margin-top:.6rem;
+  border-radius:var(--radius);
+  overflow:hidden;
+  border:1px solid;
+}
+.customer-balance.show{display:block}
+.customer-balance.ok{
+  background:var(--success-50);
+  border-color:var(--success-100);
+}
+.customer-balance.due{
+  background:var(--danger-50);
+  border-color:var(--danger-100);
+}
+.customer-balance-head{
+  padding:.55rem .85rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem;
+  font-size:.78rem;
+  font-weight:600;
+}
+.customer-balance.ok .customer-balance-head{color:var(--success-700)}
+.customer-balance.due .customer-balance-head{color:var(--danger-700)}
+.customer-balance-head .amount{font-size:1rem;font-weight:700;letter-spacing:-.02em}
+.customer-balance-detail{
+  padding:0 .85rem .6rem;
+  font-size:.72rem;
+  line-height:1.5;
+  max-height:80px;
+  overflow-y:auto;
+}
+.customer-balance.due .customer-balance-detail{color:var(--danger-700)}
+.customer-balance-detail .bill-row{
+  display:flex;
+  justify-content:space-between;
+  gap:.5rem;
+  padding:.15rem 0;
+  opacity:.9;
+}
+.customer-balance-detail .bill-row b{font-weight:600}
+
 .price-edit-btn{display:inline-flex;align-items:center;gap:.3rem;padding:1px 5px;border-radius:5px;font-size:.78rem;font-weight:600;color:var(--slate-700);background:transparent;border:1px dashed transparent;cursor:pointer;transition:all .12s;font-family:inherit}
 .price-edit-btn:hover{background:var(--brand-50);color:var(--brand-700);border-color:var(--brand-200)}
 .price-edit-btn svg{width:11px;height:11px;opacity:.5;transition:opacity .12s}
@@ -294,7 +342,6 @@ td.text-center{text-align:center}
 .form-grid{display:grid;gap:1rem;grid-template-columns:repeat(2,1fr)}
 .form-grid .span-2{grid-column:span 2}
 
-/* EDIT BILL MODAL */
 .edit-bill-box{max-width:900px!important}
 .edit-bill-top{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem}
 .edit-bill-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
@@ -307,6 +354,48 @@ td.text-center{text-align:center}
 .edit-bill-cart-foot{padding:.75rem .9rem;border-top:1px solid var(--slate-200);background:#fff}
 .edit-bill-cart-foot .total-row{font-size:.8rem;padding:.15rem 0}
 
+.edit-balance-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:.5rem .65rem;
+  margin-top:.5rem;
+  border-radius:var(--radius-sm);
+  font-size:.82rem;
+  font-weight:600;
+}
+.edit-balance-row.due{
+  background:var(--danger-50);
+  color:var(--danger-700);
+  border:1px solid var(--danger-100);
+}
+.edit-balance-row.partial{
+  background:var(--brand-50);
+  color:var(--brand-700);
+  border:1px solid var(--brand-100);
+}
+.edit-balance-row.paid{
+  background:var(--success-50);
+  color:var(--success-700);
+  border:1px solid var(--success-100);
+}
+.edit-balance-row .lbl{
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+  font-weight:500;
+}
+.edit-balance-row .lbl svg{width:13px;height:13px}
+.edit-balance-row .amt{font-size:1rem;font-weight:700;letter-spacing:-.02em}
+
+.edit-balance-meta{
+  display:flex;
+  justify-content:space-between;
+  font-size:.72rem;
+  color:var(--slate-500);
+  padding:.25rem .65rem 0;
+}
+
 .pay-methods{display:grid;gap:.5rem;grid-template-columns:repeat(3,1fr);margin-top:.4rem}
 .pay-option{position:relative;cursor:pointer}
 .pay-option input{position:absolute;opacity:0;pointer-events:none}
@@ -316,6 +405,12 @@ td.text-center{text-align:center}
 .pay-option input:checked + .pay-option-inner{border-color:var(--brand-500);background:var(--brand-50);box-shadow:0 0 0 3px rgba(99,102,241,.1)}
 .pay-option input:checked + .pay-option-inner svg{color:var(--brand-600)}
 .pay-option input:checked + .pay-option-inner span{color:var(--brand-700);font-weight:600}
+
+.settle-summary{background:var(--warning-50);border:1px solid var(--warning-100);border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:1rem}
+.settle-summary .row{display:flex;justify-content:space-between;font-size:.82rem;padding:.15rem 0;color:var(--warning-700)}
+.settle-summary .row.bold{font-size:.95rem;font-weight:700;margin-top:.35rem;padding-top:.5rem;border-top:1px dashed rgba(217,119,6,.3)}
+.settle-summary .row b{color:var(--warning-700)}
+.settle-summary .row .v-paid{color:var(--success-700)}
 
 .customer-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--slate-200)}
 .customer-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:grid;place-items:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;box-shadow:0 8px 20px -4px rgba(99,102,241,.4)}
@@ -370,6 +465,9 @@ td.text-center{text-align:center}
   .bill-card-customer{font-size:.92rem;color:var(--slate-700);font-weight:500;margin-bottom:.65rem;line-height:1.35;overflow-wrap:anywhere}
   .bill-card-meta{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding-bottom:.7rem;margin-bottom:.7rem;border-bottom:1px solid var(--slate-100)}
   .bill-card-items{font-size:.75rem;color:var(--slate-500);margin-left:auto;white-space:nowrap}
+  .bill-card-balance{display:flex;justify-content:space-between;align-items:center;padding:.5rem .7rem;background:var(--warning-50);border:1px solid var(--warning-100);border-radius:8px;margin-bottom:.7rem;font-size:.82rem}
+  .bill-card-balance .lbl{color:var(--warning-700);font-weight:500}
+  .bill-card-balance .amt{color:var(--warning-700);font-weight:700}
   .bill-card-actions{display:flex;gap:.5rem;flex-wrap:wrap}
   .bill-card-actions .btn-icon-text{flex:1;justify-content:center;padding:.55rem .5rem;font-size:.8rem;white-space:nowrap;min-width:0}
 }
@@ -612,6 +710,7 @@ td.text-center{text-align:center}
               <div class="customer-dropdown hidden" id="customerDropdown"></div>
             </div>
             <div class="customer-info hidden" id="customerInfo"></div>
+            <div class="customer-balance" id="customerBalance"></div>
             <select id="paymentMethod" class="input" style="margin-top:.5rem">
               <option value="Cash">Cash</option>
               <option value="UPI">UPI</option>
@@ -686,11 +785,16 @@ td.text-center{text-align:center}
             <div class="input-group" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="billSearch" class="input" placeholder="Search bill no. or customer..."></div>
             <input type="date" id="billDate" class="input">
             <select id="billPayment" class="input"><option value="">All payments</option><option>Cash</option><option>UPI</option><option>Credit</option><option>Other</option></select>
-            <select id="billStatus" class="input"><option value="">All statuses</option><option value="PAID">Paid</option><option value="PENDING">Pending (Credit)</option></select>
+            <select id="billStatus" class="input">
+              <option value="">All statuses</option>
+              <option value="PAID">Paid</option>
+              <option value="PARTIAL">Partial</option>
+              <option value="PENDING">Pending</option>
+            </select>
           </div>
         </div>
         <div class="table-wrap bills-table-wrap">
-          <table><thead><tr><th>Bill No.</th><th>Date &amp; Time</th><th>Customer</th><th>Items</th><th>Payment</th><th>Status</th><th class="text-end">Total</th><th class="text-end">Actions</th></tr></thead><tbody id="billsBody"></tbody></table>
+          <table><thead><tr><th>Bill No.</th><th>Date &amp; Time</th><th>Customer</th><th>Items</th><th>Payment</th><th>Status</th><th class="text-end">Total</th><th class="text-end">Balance</th><th class="text-end">Actions</th></tr></thead><tbody id="billsBody"></tbody></table>
         </div>
         <div id="billsMobile" class="bills-mobile"></div>
         <div style="padding:1rem 1.25rem;text-align:right;font-weight:600;font-size:.85rem;color:var(--slate-700);border-top:1px solid var(--slate-200)" id="billsSummary"></div>
@@ -806,15 +910,22 @@ td.text-center{text-align:center}
 </div>
 
 <div class="modal" id="settleCreditModal">
-  <div class="modal-box" style="max-width:420px">
-    <div class="modal-head"><h3>Mark Bill as Paid</h3><button class="modal-close" data-close-modal="settleCreditModal" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+  <div class="modal-box" style="max-width:440px">
+    <div class="modal-head"><h3>Record Payment</h3><button class="modal-close" data-close-modal="settleCreditModal" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="modal-body">
-      <div style="background:var(--warning-50);border:1px solid var(--warning-100);border-radius:var(--radius);padding:.85rem 1rem;margin-bottom:1rem">
-        <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;font-size:.8rem"><span style="color:var(--warning-700)">Bill No.</span><b id="settleBillNo" style="color:var(--warning-700)">—</b></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:.25rem;font-size:.8rem"><span style="color:var(--warning-700)">Customer</span><b id="settleBillCustomer" style="color:var(--warning-700)">—</b></div>
-        <div style="display:flex;justify-content:space-between;font-size:.95rem;margin-top:.4rem;padding-top:.5rem;border-top:1px dashed rgba(217,119,6,.3)"><span style="color:var(--warning-700)">Amount</span><b id="settleBillTotal" style="color:var(--warning-700)">—</b></div>
+      <div class="settle-summary">
+        <div class="row"><span>Bill No.</span><b id="settleBillNo">—</b></div>
+        <div class="row"><span>Customer</span><b id="settleBillCustomer">—</b></div>
+        <div class="row" style="margin-top:.35rem;padding-top:.5rem;border-top:1px dashed rgba(217,119,6,.3)"><span>Bill Total</span><b id="settleBillTotal">—</b></div>
+        <div class="row"><span>Already Paid</span><b class="v-paid" id="settleBillPaid">—</b></div>
+        <div class="row bold"><span>Balance Due</span><b id="settleBillBalance">—</b></div>
       </div>
-      <div style="font-size:.8rem;font-weight:500;color:var(--slate-700);margin-bottom:.4rem">Payment received via:</div>
+      <div class="field">
+        <label for="settleAmount">Amount received now (₹)</label>
+        <input type="number" id="settleAmount" min="0.01" step="0.01" inputmode="decimal" placeholder="0.00">
+        <div style="font-size:.72rem;color:var(--slate-500);margin-top:.35rem">Enter the amount the customer is paying now. Can be less than the full balance for partial payments.</div>
+      </div>
+      <div style="font-size:.8rem;font-weight:500;color:var(--slate-700);margin-bottom:.4rem;margin-top:1rem">Payment method:</div>
       <div class="pay-methods">
         <label class="pay-option"><input type="radio" name="settleMethod" value="Cash" checked><div class="pay-option-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/></svg><span>Cash</span></div></label>
         <label class="pay-option"><input type="radio" name="settleMethod" value="UPI"><div class="pay-option-inner"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg><span>UPI</span></div></label>
@@ -822,11 +933,13 @@ td.text-center{text-align:center}
       </div>
       <input type="hidden" id="settleBillId">
     </div>
-    <div class="modal-foot"><button class="btn btn-secondary" data-close-modal="settleCreditModal">Cancel</button><button class="btn btn-success" id="settleCreditBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M20 6 9 17l-5-5"/></svg> Mark as Paid</button></div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" data-close-modal="settleCreditModal">Cancel</button>
+      <button class="btn btn-success" id="settleCreditBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M20 6 9 17l-5-5"/></svg> Record Payment</button>
+    </div>
   </div>
 </div>
 
-<!-- EDIT BILL MODAL -->
 <div class="modal" id="editBillModal">
   <div class="modal-box edit-bill-box">
     <div class="modal-head">
@@ -870,6 +983,16 @@ td.text-center{text-align:center}
               <input type="number" id="editBillDiscount" value="0" min="0">
             </div>
             <div class="total-row grand" style="font-size:1rem;padding-top:.5rem;margin-top:.3rem"><span>Total</span><span id="editBillTotal">₹0</span></div>
+            <div class="edit-balance-meta hidden" id="editBillPaidMeta">
+              <span>Already Paid</span><span id="editBillPaid">₹0</span>
+            </div>
+            <div class="edit-balance-row hidden" id="editBillBalanceRow">
+              <span class="lbl">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                Balance Due
+              </span>
+              <span class="amt" id="editBillBalance">₹0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -958,6 +1081,24 @@ function confirmBox(msg){ return window.confirm(msg); }
 function startOfToday(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
 function sumTotal(list){ return list.reduce((s, b) => s + b.total, 0); }
 
+/* ============================================================
+   BALANCE HELPER — Paid bills always show 0 balance
+   ============================================================ */
+function getBalance(b){
+  if(b.status === 'PAID') return 0;
+  return Math.max(0, Number(b.total||0) - Number(b.paidAmount||0));
+}
+function getStatusLabel(status){
+  if(status === 'PAID') return 'Paid';
+  if(status === 'PARTIAL') return 'Partial';
+  return 'Pending';
+}
+function getStatusClass(status){
+  if(status === 'PAID') return 'badge-paid';
+  if(status === 'PARTIAL') return 'badge-partial';
+  return 'badge-pending';
+}
+
 function mapProduct(p){ return { id: p.id, name: p.name, price: Number(p.price), stock: Number(p.stock), minStock: Number(p.min_stock), category: p.category, unit: p.unit }; }
 function mapCustomer(c){ return { id: c.id, name: c.name, phone: c.phone || '', address: c.address || '', notes: c.notes || '', createdAt: c.created_at }; }
 function mapBillItem(i){ return { productId: i.product_id, name: i.name, price: Number(i.price), qty: Number(i.qty), unit: i.unit, subtotal: Number(i.subtotal) }; }
@@ -967,7 +1108,10 @@ function mapBill(b){
     customer: b.customer, customerId: b.customer_id || null,
     items: (b.items || b.bill_items || []).map(mapBillItem),
     subtotal: Number(b.subtotal), discount: Number(b.discount),
-    total: Number(b.total), payment: b.payment, status: b.status,
+    total: Number(b.total),
+    /* PAID bills are always treated as fully paid, even if old records have paid_amount = 0 */
+    paidAmount: b.status === 'PAID' ? Number(b.total || 0) : Number(b.paid_amount || 0),
+    payment: b.payment, status: b.status,
   };
 }
 function mapSettings(s){
@@ -1030,6 +1174,24 @@ const DB = {
     const { data, error } = await q;
     if(error) throw error; return (data || []).map(mapBill);
   },
+  async getCustomerBalance(customerId){
+    const { data, error } = await sb.from('bills')
+      .select('id, bill_no, total, paid_amount, status, created_at')
+      .eq('customer_id', customerId)
+      .in('status', ['PENDING', 'PARTIAL'])
+      .order('created_at', { ascending: true });
+    if(error) throw error;
+    const list = (data || []).map(b => ({
+      id: b.id, billNo: Number(b.bill_no),
+      createdAt: new Date(b.created_at).getTime(),
+      total: Number(b.total),
+      paidAmount: Number(b.paid_amount || 0),
+      status: b.status,
+      balance: Math.max(0, Number(b.total) - Number(b.paid_amount || 0)),
+    }));
+    const totalBalance = list.reduce((s, b) => s + b.balance, 0);
+    return { bills: list, totalBalance };
+  },
   async getBillById(id){
     const { data, error } = await sb.from('bills').select('*, items:bill_items(*)').eq('id', id).single();
     if(error) throw error; return mapBill(data);
@@ -1047,9 +1209,11 @@ const DB = {
     const total = Math.max(0, subtotal - discount);
     const payment = d.payment || 'Cash';
     const status = payment === 'Credit' ? 'PENDING' : 'PAID';
+    const paid_amount = status === 'PAID' ? total : 0;
+
     const { data: billRow, error: bErr } = await sb.from('bills').insert({
       bill_no: billNo, customer: (d.customer || '').trim() || 'Walk-in',
-      customer_id: d.customerId || null, subtotal, discount, total, payment, status,
+      customer_id: d.customerId || null, subtotal, discount, total, payment, status, paid_amount,
     }).select().single();
     if(bErr) throw bErr;
     const itemsToInsert = lineItems.map(it => Object.assign({}, it, { bill_id: billRow.id }));
@@ -1063,17 +1227,15 @@ const DB = {
       id: billRow.id, billNo: Number(billRow.bill_no), createdAt: new Date(billRow.created_at).getTime(),
       customer: billRow.customer, customerId: billRow.customer_id || null,
       items: itemsData.map(mapBillItem), subtotal: Number(billRow.subtotal), discount: Number(billRow.discount),
-      total: Number(billRow.total), payment: billRow.payment, status: billRow.status, shop: settings,
+      total: Number(billRow.total), paidAmount: Number(billRow.paid_amount || 0),
+      payment: billRow.payment, status: billRow.status, shop: settings,
     };
   },
   async updateBill(id, d){
-    // Fetch old bill with items
-    const { data: oldBill, error: obErr } = await sb.from('bills')
-      .select('*, items:bill_items(*)').eq('id', id).single();
+    const { data: oldBill, error: obErr } = await sb.from('bills').select('*, items:bill_items(*)').eq('id', id).single();
     if(obErr) throw obErr;
     if(!oldBill) throw new Error('Bill not found');
 
-    // Restore old stock
     for(const item of (oldBill.items || [])){
       if(!item.product_id) continue;
       try{
@@ -1083,7 +1245,6 @@ const DB = {
       } catch(e){ console.warn('Stock restore failed', e); }
     }
 
-    // Compute new totals
     const lineItems = d.items.map(it => ({
       product_id: it.productId, name: it.name, price: Number(it.price), qty: Number(it.qty),
       unit: it.unit || '', subtotal: Number(it.price) * Number(it.qty),
@@ -1092,31 +1253,56 @@ const DB = {
     const discount = Number(d.discount || 0);
     const total = Math.max(0, subtotal - discount);
     const payment = d.payment || 'Cash';
-    const status = payment === 'Credit' ? 'PENDING' : 'PAID';
+    const oldPaid = oldBill.status === 'PAID' ? Number(oldBill.total || 0) : Number(oldBill.paid_amount || 0);
+    let status;
+    let paid_amount;
+    if(payment === 'Credit'){
+      paid_amount = Math.min(oldPaid, total);
+      status = paid_amount >= total && total > 0 ? 'PAID' : (paid_amount > 0 ? 'PARTIAL' : 'PENDING');
+    } else {
+      paid_amount = total;
+      status = 'PAID';
+    }
 
-    // Update bill header
     const { error: uErr } = await sb.from('bills').update({
       customer: (d.customer || '').trim() || 'Walk-in',
-      subtotal, discount, total, payment, status,
+      subtotal, discount, total, payment, status, paid_amount,
     }).eq('id', id);
     if(uErr) throw uErr;
 
-    // Replace items
     await sb.from('bill_items').delete().eq('bill_id', id);
     const itemsToInsert = lineItems.map(it => Object.assign({}, it, { bill_id: id }));
     const { error: iErr } = await sb.from('bill_items').insert(itemsToInsert);
     if(iErr) throw iErr;
 
-    // Deduct new stock
     for(const it of lineItems){
       const { error: sErr } = await sb.rpc('decrement_stock', { p_product_id: it.product_id, p_qty: it.qty });
       if(sErr) console.warn('Stock decrement failed', sErr);
     }
     return true;
   },
-  async settleCredit(id, method){
-    const { error } = await sb.from('bills').update({ payment: method, status: 'PAID' }).eq('id', id);
+  async recordPayment(id, amount, method){
+    const { data: bill, error: bErr } = await sb.from('bills').select('total, paid_amount, status').eq('id', id).single();
+    if(bErr) throw bErr;
+    const total = Number(bill.total || 0);
+    const currentPaid = bill.status === 'PAID' ? total : Number(bill.paid_amount || 0);
+    const newPaid = Math.min(total, currentPaid + Number(amount));
+    let newStatus, newPayment;
+    if(newPaid >= total){
+      newStatus = 'PAID';
+      newPayment = method || 'Cash';
+    } else if(newPaid > 0){
+      newStatus = 'PARTIAL';
+      newPayment = 'Credit';
+    } else {
+      newStatus = 'PENDING';
+      newPayment = 'Credit';
+    }
+    const { error } = await sb.from('bills').update({
+      paid_amount: newPaid, status: newStatus, payment: newPayment,
+    }).eq('id', id);
     if(error) throw error;
+    return { paidAmount: newPaid, status: newStatus, payment: newPayment };
   },
   async deleteBill(id){
     const { data: bill, error: bErr } = await sb.from('bills').select('*, items:bill_items(*)').eq('id', id).single();
@@ -1203,8 +1389,10 @@ async function renderDashboard(){
   $('#sSales').textContent = fmt(sumTotal(todayBills));
   $('#sBills').textContent = todayBills.length;
   $('#sOut').textContent   = products.filter(p => p.stock <= 0).length;
-  const pendingBills = todayBills.filter(b => b.status === 'PENDING');
-  $('#sCredit').textContent = fmt(sumTotal(pendingBills));
+  const pendingBalance = todayBills
+    .filter(b => b.status === 'PENDING' || b.status === 'PARTIAL')
+    .reduce((s, b) => s + getBalance(b), 0);
+  $('#sCredit').textContent = fmt(pendingBalance);
   const rb = $('#recentBillsBody');
   if(!allBills.length){
     rb.innerHTML = '<tr><td colspan="4"><div class="empty"><div class="empty-title">No bills yet</div></div></td></tr>';
@@ -1261,12 +1449,14 @@ function selectCustomer(c){
   $('#customerClear').classList.remove('hidden');
   $('#customerDropdown').classList.add('hidden');
   updateCustomerInfo();
+  loadAndShowCustomerBalance(c.id);
 }
 function clearCustomer(){
   selectedCustomer = null;
   $('#customerSearch').value = '';
   $('#customerClear').classList.add('hidden');
   $('#customerInfo').classList.add('hidden');
+  hideCustomerBalance();
 }
 function updateCustomerInfo(){
   const info = $('#customerInfo');
@@ -1278,8 +1468,56 @@ function updateCustomerInfo(){
   info.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;color:var(--success-600)"><path d="M20 6 9 17l-5-5"/></svg> Saved · <b>${parts.join(' · ')}</b>`;
   info.classList.remove('hidden');
 }
+
+async function loadAndShowCustomerBalance(customerId){
+  const box = $('#customerBalance');
+  box.className = 'customer-balance';
+  box.innerHTML = '<div class="customer-balance-head"><span>Loading balance...</span></div>';
+  box.classList.add('show');
+  try{
+    const { bills, totalBalance } = await DB.getCustomerBalance(customerId);
+    if(totalBalance <= 0){
+      box.className = 'customer-balance ok show';
+      box.innerHTML = `
+        <div class="customer-balance-head">
+          <span>No pending balance</span>
+          <span class="amount">₹0</span>
+        </div>`;
+      return;
+    }
+    box.className = 'customer-balance due show';
+    const detailHtml = bills.slice(0, 5).map(b => {
+      const d = new Date(b.createdAt);
+      const dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+      return `<div class="bill-row"><span>#${b.billNo} · ${dateStr}</span><b>₹${b.balance}</b></div>`;
+    }).join('');
+    const more = bills.length > 5 ? `<div class="bill-row" style="opacity:.7"><span>+${bills.length - 5} more bill(s)</span><span></span></div>` : '';
+    box.innerHTML = `
+      <div class="customer-balance-head">
+        <span>Outstanding Balance · ${bills.length} bill(s)</span>
+        <span class="amount">${fmt(totalBalance)}</span>
+      </div>
+      <div class="customer-balance-detail">${detailHtml}${more}</div>`;
+  } catch(e){
+    console.error(e);
+    box.className = 'customer-balance';
+    box.classList.remove('show');
+  }
+}
+function hideCustomerBalance(){
+  const box = $('#customerBalance');
+  box.classList.remove('show');
+  box.innerHTML = '';
+  box.className = 'customer-balance';
+}
+
 $('#customerSearch').addEventListener('input', e => {
-  if(selectedCustomer){ selectedCustomer = null; $('#customerClear').classList.add('hidden'); $('#customerInfo').classList.add('hidden'); }
+  if(selectedCustomer){
+    selectedCustomer = null;
+    $('#customerClear').classList.add('hidden');
+    $('#customerInfo').classList.add('hidden');
+    hideCustomerBalance();
+  }
   renderCustomerPicker(e.target.value);
 });
 $('#customerSearch').addEventListener('focus', e => { if(!selectedCustomer) renderCustomerPicker(e.target.value); });
@@ -1390,7 +1628,19 @@ function openPriceEdit(index){
   setTimeout(() => { const inp = $('#priceEditInput'); if(inp){ inp.focus(); inp.select(); } }, 150);
 }
 function savePriceEdit(){
-  const index = Number($('#priceEditIndex').value);
+  const raw = String($('#priceEditIndex').value);
+  if(raw.startsWith('edit:')){
+    const i = Number(raw.slice(5));
+    const newPrice = Number($('#priceEditInput').value);
+    if(!editCart[i]) return;
+    if(isNaN(newPrice) || newPrice < 0){ toast('Invalid price', 'error'); return; }
+    editCart[i].price = newPrice;
+    closeModal('priceEditModal');
+    renderEditBillCart();
+    toast('Price updated', 'success');
+    return;
+  }
+  const index = Number(raw);
   const newPrice = Number($('#priceEditInput').value);
   if(!cart[index]) return;
   if(isNaN(newPrice) || newPrice < 0){ toast('Invalid price', 'error'); return; }
@@ -1400,7 +1650,17 @@ function savePriceEdit(){
   toast('Price updated', 'success');
 }
 function resetPriceEdit(){
-  const index = Number($('#priceEditIndex').value);
+  const raw = String($('#priceEditIndex').value);
+  if(raw.startsWith('edit:')){
+    const i = Number(raw.slice(5));
+    if(!editCart[i]) return;
+    if(editCart[i].originalPrice != null) editCart[i].price = editCart[i].originalPrice;
+    closeModal('priceEditModal');
+    renderEditBillCart();
+    toast('Price reset', 'success');
+    return;
+  }
+  const index = Number(raw);
   if(!cart[index]) return;
   if(cart[index].originalPrice != null) cart[index].price = cart[index].originalPrice;
   closeModal('priceEditModal');
@@ -1458,6 +1718,9 @@ function showReceipt(bill, title){
   const s = bill.shop || {};
   const lines = bill.items.map(it => `<tr><td colspan="3" style="padding-top:4px">${esc(it.name)}</td></tr><tr><td>${it.qty} × ₹${it.price}</td><td style="text-align:right">₹${it.subtotal}</td></tr>`).join('');
   const isPending = bill.status === 'PENDING';
+  const isPartial = bill.status === 'PARTIAL';
+  const balance = getBalance(bill);
+  const paidAmt = Number(bill.paidAmount || 0);
   $('#receiptContent').innerHTML = `
     <div class="r-title">${esc(s.shopName || 'S. MUHAMMAD RAFI MILK PARLAR')}</div>
     <div class="r-sub">${esc(s.address || '')}</div>
@@ -1470,11 +1733,13 @@ function showReceipt(bill, title){
     <div class="line"><span>Subtotal</span><span>₹${bill.subtotal}</span></div>
     ${bill.discount ? `<div class="line"><span>Discount</span><span>− ₹${bill.discount}</span></div>` : ''}
     <div class="line bold"><span>TOTAL</span><span>₹${bill.total}</span></div>
+    ${paidAmt > 0 && !isPending ? `<div class="line"><span>Paid</span><span>₹${paidAmt}</span></div>` : ''}
+    ${balance > 0 ? `<div class="line bold"><span>BALANCE</span><span>₹${balance}</span></div>` : ''}
     <hr>
     <div class="line"><span><b>Payment:</b></span><span>${bill.payment}</span></div>
-    <div class="line"><span><b>Status:</b></span><span>${isPending ? 'PENDING' : 'PAID'}</span></div>
-    ${isPending ? '<div style="text-align:center;margin-top:.4rem"><span class="status-badge">CREDIT — PLEASE PAY</span></div>' : ''}
-    <hr><div class="thanks">${isPending ? 'Payment due on next visit.' : 'Thank you. Visit again.'}</div>`;
+    <div class="line"><span><b>Status:</b></span><span>${getStatusLabel(bill.status).toUpperCase()}</span></div>
+    ${(isPending || isPartial) ? `<div style="text-align:center;margin-top:.4rem"><span class="status-badge">${isPartial ? 'PARTIAL' : 'CREDIT'} — ₹${balance} DUE</span></div>` : ''}
+    <hr><div class="thanks">${(isPending || isPartial) ? 'Payment due on next visit.' : 'Thank you. Visit again.'}</div>`;
   openModal('receiptModal');
 }
 $('#printBtn').addEventListener('click', () => window.print());
@@ -1556,7 +1821,7 @@ async function renderCustomersPage(filter){
     if(!stats[b.customerId]) stats[b.customerId] = { orders: 0, spent: 0, lastOrder: 0, pending: 0 };
     stats[b.customerId].orders++;
     if(b.status === 'PAID') stats[b.customerId].spent += b.total;
-    else stats[b.customerId].pending += b.total;
+    else stats[b.customerId].pending += getBalance(b);
     if(b.createdAt > stats[b.customerId].lastOrder) stats[b.customerId].lastOrder = b.createdAt;
   });
   const thirtyDaysAgo = Date.now() - 30 * 86400000;
@@ -1618,9 +1883,9 @@ async function viewCustomer(id){
   if(!c) return;
   const bills = await DB.getBills({ customerId: id });
   const paidBills = bills.filter(b => b.status === 'PAID');
-  const pendingBills = bills.filter(b => b.status === 'PENDING');
+  const pendingBills = bills.filter(b => b.status !== 'PAID');
   const totalSpent = paidBills.reduce((s, b) => s + b.total, 0);
-  const totalPending = pendingBills.reduce((s, b) => s + b.total, 0);
+  const totalPending = pendingBills.reduce((s, b) => s + getBalance(b), 0);
   const initials = c.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   $('#customerDetailsBody').innerHTML = `
     <div class="customer-header">
@@ -1636,11 +1901,14 @@ async function viewCustomer(id){
     <div class="customer-stats">
       <div class="customer-stat"><div class="v">${bills.length}</div><div class="l">Orders</div></div>
       <div class="customer-stat"><div class="v">${fmt(totalSpent)}</div><div class="l">Spent</div></div>
-      <div class="customer-stat"><div class="v" style="color:${totalPending > 0 ? 'var(--warning-700)' : 'var(--slate-900)'}">${fmt(totalPending)}</div><div class="l">Pending</div></div>
+      <div class="customer-stat"><div class="v" style="color:${totalPending > 0 ? 'var(--warning-700)' : 'var(--slate-900)'}">${fmt(totalPending)}</div><div class="l">Balance</div></div>
     </div>
     ${c.address ? `<div class="customer-detail-section"><h5>Address</h5><div class="customer-detail-block">${esc(c.address)}</div></div>` : ''}
     ${c.notes ? `<div class="customer-detail-section"><h5>Notes</h5><div class="customer-detail-block">${esc(c.notes)}</div></div>` : ''}
-    ${bills.length ? `<div class="customer-detail-section"><h5>Recent Bills</h5><div class="customer-bills-list">${bills.slice(0, 10).map(b => `<div class="customer-bill-row" data-view-bill="${b.id}"><div class="bl">#${b.billNo} · ${new Date(b.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'})} · ${esc(b.payment)}${b.status === 'PENDING' ? ' ⏳' : ''}</div><div class="br">${fmt(b.total)}</div></div>`).join('')}</div></div>` : '<div style="text-align:center;padding:1rem;color:var(--slate-500);font-size:.85rem">No orders yet</div>'}
+    ${bills.length ? `<div class="customer-detail-section"><h5>Recent Bills</h5><div class="customer-bills-list">${bills.slice(0, 10).map(b => {
+      const bal = getBalance(b);
+      return `<div class="customer-bill-row" data-view-bill="${b.id}"><div class="bl">#${b.billNo} · ${new Date(b.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'short'})} · ${esc(b.payment)}${b.status === 'PENDING' ? ' ⏳' : (b.status === 'PARTIAL' ? ' ◐' : '')}</div><div class="br">${fmt(b.total)}${bal > 0 ? ` <span style="color:var(--danger-600);font-size:.7rem">(₹${bal} due)</span>` : ''}</div></div>`;
+    }).join('')}</div></div>` : '<div style="text-align:center;padding:1rem;color:var(--slate-500);font-size:.85rem">No orders yet</div>'}
     <input type="hidden" id="viewingCustomerId" value="${c.id}">
   `;
   $('#customerDetailsBody').querySelectorAll('[data-view-bill]').forEach(el => el.onclick = async () => {
@@ -1700,14 +1968,17 @@ async function renderBillsPage(){
 
   const tbody = $('#billsBody');
   if(!list.length){
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-title">No bills found</div></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-title">No bills found</div></div></td></tr>';
   } else {
     tbody.innerHTML = list.map(b => {
       const isPending = b.status === 'PENDING';
+      const isPartial = b.status === 'PARTIAL';
       const isCredit = b.payment === 'Credit';
       const payBadge = isCredit ? 'badge-credit' : 'badge-neutral';
-      const statusBadge = isPending ? 'badge-pending' : 'badge-paid';
-      const statusLabel = isPending ? 'Pending' : 'Paid';
+      const statusBadge = getStatusClass(b.status);
+      const statusLabel = getStatusLabel(b.status);
+      const balance = getBalance(b);
+      const balanceClass = balance > 0 ? 'td-balance' : 'td-balance zero';
       return `<tr>
         <td class="td-strong">#${b.billNo}</td>
         <td style="color:var(--slate-500);font-size:.8rem">${new Date(b.createdAt).toLocaleString('en-IN')}</td>
@@ -1716,8 +1987,9 @@ async function renderBillsPage(){
         <td><span class="badge ${payBadge}">${esc(b.payment)}</span></td>
         <td><span class="badge ${statusBadge}">${statusLabel}</span></td>
         <td class="text-end td-strong">${fmt(b.total)}</td>
+        <td class="text-end ${balanceClass}">${balance > 0 ? fmt(balance) : '—'}</td>
         <td class="text-end"><div class="actions">
-          ${isPending ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Paid</button>` : ''}
+          ${(isPending || isPartial) ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Receive</button>` : ''}
           <button class="btn-icon-text warn" data-edit-bill="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
           <button class="btn-icon-text edit" data-view="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button>
           <button class="btn-icon-text danger" data-delete="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button>
@@ -1733,10 +2005,12 @@ async function renderBillsPage(){
     } else {
       mobile.innerHTML = list.map(b => {
         const isPending = b.status === 'PENDING';
+        const isPartial = b.status === 'PARTIAL';
         const isCredit = b.payment === 'Credit';
         const payBadge = isCredit ? 'badge-credit' : 'badge-neutral';
-        const statusBadge = isPending ? 'badge-pending' : 'badge-paid';
-        const statusLabel = isPending ? 'Pending' : 'Paid';
+        const statusBadge = getStatusClass(b.status);
+        const statusLabel = getStatusLabel(b.status);
+        const balance = getBalance(b);
         const d = new Date(b.createdAt);
         const dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
         const timeStr = d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
@@ -1756,8 +2030,9 @@ async function renderBillsPage(){
               <span class="badge ${statusBadge}">${statusLabel}</span>
               <span class="bill-card-items">${itemCount} ${itemCount === 1 ? 'item' : 'items'}</span>
             </div>
+            ${balance > 0 ? `<div class="bill-card-balance"><span class="lbl">Balance Due</span><span class="amt">${fmt(balance)}</span></div>` : ''}
             <div class="bill-card-actions">
-              ${isPending ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>Paid</button>` : ''}
+              ${(isPending || isPartial) ? `<button class="btn-icon-text success" data-settle="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Receive</button>` : ''}
               <button class="btn-icon-text warn" data-edit-bill="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
               <button class="btn-icon-text edit" data-view="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>View</button>
               <button class="btn-icon-text danger" data-delete="${b.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>Delete</button>
@@ -1770,9 +2045,11 @@ async function renderBillsPage(){
   wireBillActions(tbody);
 
   const total = list.reduce((s, b) => s + b.total, 0);
-  const pendingTotal = list.filter(b => b.status === 'PENDING').reduce((s, b) => s + b.total, 0);
+  const pendingTotal = list
+    .filter(b => b.status === 'PENDING' || b.status === 'PARTIAL')
+    .reduce((s, b) => s + getBalance(b), 0);
   let summary = `${list.length} bill(s) · ${fmt(total)}`;
-  if(pendingTotal > 0) summary += ` · ${fmt(pendingTotal)} pending`;
+  if(pendingTotal > 0) summary += ` · ${fmt(pendingTotal)} balance due`;
   $('#billsSummary').textContent = summary;
 }
 
@@ -1800,14 +2077,15 @@ function wireBillActions(root){
   $('#'+id).addEventListener('change', renderBillsPage);
 });
 
-/* ---------- EDIT BILL ---------- */
 let editBillId = null;
 let editCart = [];
 let editProductsCache = [];
 let editOriginalItems = [];
+let editBillPaidAmount = 0;
 
 async function openEditBill(bill){
   editBillId = bill.id;
+  editBillPaidAmount = bill.status === 'PAID' ? Number(bill.total || 0) : Number(bill.paidAmount || 0);
   editCart = bill.items.map(it => ({
     productId: it.productId,
     name: it.name,
@@ -1962,12 +2240,47 @@ function renderEditBillCart(){
 function updateEditBillTotals(){
   const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
   const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
+  const total = Math.max(0, sub - disc);
   $('#editBillSubtotal').textContent = fmt(sub);
-  $('#editBillTotal').textContent = fmt(Math.max(0, sub - disc));
+  $('#editBillTotal').textContent = fmt(total);
+
+  const paymentMethod = $('#editBillPayment').value;
+  const balanceRow = $('#editBillBalanceRow');
+  const paidMeta = $('#editBillPaidMeta');
+
+  if(paymentMethod === 'Credit'){
+    const paidSoFar = Math.min(editBillPaidAmount, total);
+    const balance = Math.max(0, total - paidSoFar);
+
+    if(paidSoFar > 0){
+      paidMeta.classList.remove('hidden');
+      $('#editBillPaid').textContent = fmt(paidSoFar);
+    } else {
+      paidMeta.classList.add('hidden');
+    }
+
+    balanceRow.classList.remove('hidden');
+    balanceRow.className = 'edit-balance-row';
+    if(balance <= 0){
+      balanceRow.classList.add('paid');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Fully Paid';
+    } else if(paidSoFar > 0){
+      balanceRow.classList.add('partial');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
+    } else {
+      balanceRow.classList.add('due');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
+    }
+    $('#editBillBalance').textContent = fmt(balance);
+  } else {
+    balanceRow.classList.add('hidden');
+    paidMeta.classList.add('hidden');
+  }
 }
 
 $('#editBillProductSearch').addEventListener('input', e => renderEditBillProducts(e.target.value));
 $('#editBillDiscount').addEventListener('input', updateEditBillTotals);
+$('#editBillPayment').addEventListener('change', updateEditBillTotals);
 
 $('#editBillSaveBtn').addEventListener('click', async () => {
   if(!editCart.length){ toast('Bill cannot be empty', 'error'); return; }
@@ -1982,7 +2295,7 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
       customer: $('#editBillCustomer').value.trim(),
     });
     closeModal('editBillModal');
-    editBillId = null; editCart = []; editOriginalItems = [];
+    editBillId = null; editCart = []; editOriginalItems = []; editBillPaidAmount = 0;
     await renderBillsPage();
     toast('Bill updated, stock adjusted', 'success');
   } catch(e){
@@ -1992,48 +2305,46 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
   }
 });
 
-/* override price edit save to also handle edit modal */
-const originalSavePriceEdit = savePriceEdit;
-savePriceEdit = function(){
-  const raw = String($('#priceEditIndex').value);
-  if(raw.startsWith('edit:')){
-    const i = Number(raw.slice(5));
-    const newPrice = Number($('#priceEditInput').value);
-    if(!editCart[i]) return;
-    if(isNaN(newPrice) || newPrice < 0){ toast('Invalid price', 'error'); return; }
-    editCart[i].price = newPrice;
-    closeModal('priceEditModal');
-    renderEditBillCart();
-    toast('Price updated', 'success');
-    return;
-  }
-  originalSavePriceEdit();
-};
-
-/* ---------- SETTLE CREDIT ---------- */
 function openSettleCredit(bill){
+  const balance = getBalance(bill);
+  const paid = Number(bill.paidAmount || 0);
   $('#settleBillId').value = bill.id;
   $('#settleBillNo').textContent = '#' + bill.billNo;
   $('#settleBillCustomer').textContent = bill.customer;
   $('#settleBillTotal').textContent = fmt(bill.total);
+  $('#settleBillPaid').textContent = fmt(paid);
+  $('#settleBillBalance').textContent = fmt(balance);
+  $('#settleAmount').value = balance;
+  $('#settleAmount').max = balance;
   document.querySelectorAll('input[name="settleMethod"]').forEach(r => r.checked = r.value === 'Cash');
   openModal('settleCreditModal');
+  setTimeout(() => { const inp = $('#settleAmount'); if(inp){ inp.focus(); inp.select(); } }, 150);
 }
+
 $('#settleCreditBtn').addEventListener('click', async () => {
   const id = $('#settleBillId').value;
   if(!id) return;
   const selected = document.querySelector('input[name="settleMethod"]:checked');
   const method = selected ? selected.value : 'Cash';
-  const btn = $('#settleCreditBtn'); btn.disabled = true; btn.textContent = 'Updating...';
+  const amount = Number($('#settleAmount').value);
+  if(isNaN(amount) || amount <= 0){ toast('Enter a valid amount', 'error'); return; }
+
+  const btn = $('#settleCreditBtn'); btn.disabled = true;
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span>Recording...</span>';
   try{
-    await DB.settleCredit(id, method);
+    const result = await DB.recordPayment(id, amount, method);
     closeModal('settleCreditModal');
     await renderBillsPage();
-    toast('Marked paid via ' + method, 'success');
-  } catch(e){ toast('Failed: ' + e.message, 'error'); }
-  finally {
+    if(result.status === 'PAID') toast('Payment received · Bill fully paid', 'success');
+    else if(result.status === 'PARTIAL') toast('Partial payment recorded · ' + fmt(amount) + ' received', 'success');
+    else toast('Payment recorded', 'success');
+  } catch(e){
+    console.error(e);
+    toast('Failed: ' + (e.message || 'unknown'), 'error');
+  } finally {
     btn.disabled = false;
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:15px;height:15px"><path d="M20 6 9 17l-5-5"/></svg> Mark as Paid';
+    btn.innerHTML = orig;
   }
 });
 
