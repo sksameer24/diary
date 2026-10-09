@@ -275,49 +275,17 @@ td.text-center{text-align:center}
 .customer-info{font-size:.72rem;color:var(--slate-500);margin-top:.35rem;display:flex;align-items:center;gap:.35rem;flex-wrap:wrap}
 .customer-info b{color:var(--slate-700);font-weight:500}
 
-.customer-balance{
-  display:none;
-  margin-top:.6rem;
-  border-radius:var(--radius);
-  overflow:hidden;
-  border:1px solid;
-}
+.customer-balance{display:none;margin-top:.6rem;border-radius:var(--radius);overflow:hidden;border:1px solid}
 .customer-balance.show{display:block}
-.customer-balance.ok{
-  background:var(--success-50);
-  border-color:var(--success-100);
-}
-.customer-balance.due{
-  background:var(--danger-50);
-  border-color:var(--danger-100);
-}
-.customer-balance-head{
-  padding:.55rem .85rem;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:.5rem;
-  font-size:.78rem;
-  font-weight:600;
-}
+.customer-balance.ok{background:var(--success-50);border-color:var(--success-100)}
+.customer-balance.due{background:var(--danger-50);border-color:var(--danger-100)}
+.customer-balance-head{padding:.55rem .85rem;display:flex;justify-content:space-between;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600}
 .customer-balance.ok .customer-balance-head{color:var(--success-700)}
 .customer-balance.due .customer-balance-head{color:var(--danger-700)}
 .customer-balance-head .amount{font-size:1rem;font-weight:700;letter-spacing:-.02em}
-.customer-balance-detail{
-  padding:0 .85rem .6rem;
-  font-size:.72rem;
-  line-height:1.5;
-  max-height:80px;
-  overflow-y:auto;
-}
+.customer-balance-detail{padding:0 .85rem .6rem;font-size:.72rem;line-height:1.5;max-height:80px;overflow-y:auto}
 .customer-balance.due .customer-balance-detail{color:var(--danger-700)}
-.customer-balance-detail .bill-row{
-  display:flex;
-  justify-content:space-between;
-  gap:.5rem;
-  padding:.15rem 0;
-  opacity:.9;
-}
+.customer-balance-detail .bill-row{display:flex;justify-content:space-between;gap:.5rem;padding:.15rem 0;opacity:.9}
 .customer-balance-detail .bill-row b{font-weight:600}
 
 .price-edit-btn{display:inline-flex;align-items:center;gap:.3rem;padding:1px 5px;border-radius:5px;font-size:.78rem;font-weight:600;color:var(--slate-700);background:transparent;border:1px dashed transparent;cursor:pointer;transition:all .12s;font-family:inherit}
@@ -328,7 +296,12 @@ td.text-center{text-align:center}
 .price-meta b{color:var(--slate-900);font-weight:600}
 .price-original{text-decoration:line-through;color:var(--slate-400);font-size:.7rem}
 
+/* ============================================================
+   MODALS — z-index 100 default
+   ============================================================ */
 .modal{display:none;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);overflow-y:auto}
+/* priceEditModal must sit ABOVE editBillModal so it shows when editing a bill */
+.modal#priceEditModal{z-index:150}
 .modal.show{display:flex}
 .modal-box{background:#fff;border-radius:var(--radius-xl);width:100%;max-width:520px;max-height:calc(100vh - 2rem);display:flex;flex-direction:column;box-shadow:var(--shadow-xl);animation:modalIn .2s cubic-bezier(.16,1,.3,1)}
 @keyframes modalIn{from{opacity:0;transform:translateY(8px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -354,47 +327,15 @@ td.text-center{text-align:center}
 .edit-bill-cart-foot{padding:.75rem .9rem;border-top:1px solid var(--slate-200);background:#fff}
 .edit-bill-cart-foot .total-row{font-size:.8rem;padding:.15rem 0}
 
-.edit-balance-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:.5rem .65rem;
-  margin-top:.5rem;
-  border-radius:var(--radius-sm);
-  font-size:.82rem;
-  font-weight:600;
-}
-.edit-balance-row.due{
-  background:var(--danger-50);
-  color:var(--danger-700);
-  border:1px solid var(--danger-100);
-}
-.edit-balance-row.partial{
-  background:var(--brand-50);
-  color:var(--brand-700);
-  border:1px solid var(--brand-100);
-}
-.edit-balance-row.paid{
-  background:var(--success-50);
-  color:var(--success-700);
-  border:1px solid var(--success-100);
-}
-.edit-balance-row .lbl{
-  display:flex;
-  align-items:center;
-  gap:.35rem;
-  font-weight:500;
-}
+.edit-balance-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem .65rem;margin-top:.5rem;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600}
+.edit-balance-row.due{background:var(--danger-50);color:var(--danger-700);border:1px solid var(--danger-100)}
+.edit-balance-row.partial{background:var(--brand-50);color:var(--brand-700);border:1px solid var(--brand-100)}
+.edit-balance-row.paid{background:var(--success-50);color:var(--success-700);border:1px solid var(--success-100)}
+.edit-balance-row .lbl{display:flex;align-items:center;gap:.35rem;font-weight:500}
 .edit-balance-row .lbl svg{width:13px;height:13px}
 .edit-balance-row .amt{font-size:1rem;font-weight:700;letter-spacing:-.02em}
 
-.edit-balance-meta{
-  display:flex;
-  justify-content:space-between;
-  font-size:.72rem;
-  color:var(--slate-500);
-  padding:.25rem .65rem 0;
-}
+.edit-balance-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--slate-500);padding:.25rem .65rem 0}
 
 .pay-methods{display:grid;gap:.5rem;grid-template-columns:repeat(3,1fr);margin-top:.4rem}
 .pay-option{position:relative;cursor:pointer}
@@ -442,7 +383,7 @@ td.text-center{text-align:center}
 .receipt .thanks{text-align:center;font-size:.7rem;margin-top:.35rem;color:#333}
 .receipt .status-badge{display:inline-block;padding:2px 8px;border:1px solid #000;border-radius:3px;font-size:.7rem;font-weight:700;letter-spacing:.05em}
 
-.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);background:var(--slate-900);color:#fff;padding:.75rem 1.1rem;border-radius:var(--radius);font-size:.85rem;font-weight:500;box-shadow:var(--shadow-xl);z-index:200;max-width:min(90vw,420px);transition:transform .28s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:.6rem;letter-spacing:-.005em}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(120px);background:var(--slate-900);color:#fff;padding:.75rem 1.1rem;border-radius:var(--radius);font-size:.85rem;font-weight:500;box-shadow:var(--shadow-xl);z-index:300;max-width:min(90vw,420px);transition:transform .28s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;gap:.6rem;letter-spacing:-.005em}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast svg{width:16px;height:16px;flex-shrink:0}
 .toast.success{background:var(--success-700)}
@@ -550,15 +491,39 @@ td.text-center{text-align:center}
   .bill-card-total{font-size:1.1rem}
 }
 
-@media print{
-  body *{visibility:hidden}
-  #printArea,#printArea *{visibility:visible}
-  #printArea{position:absolute;left:0;top:0;width:100%;padding:0}
-  .no-print{display:none!important}
-  .modal{background:none;position:static;display:block;padding:0}
-  .modal-box{box-shadow:none;max-height:none;border-radius:0}
-  .modal-head,.modal-foot{display:none!important}
-  .modal-body{padding:0}
+/* ============================================================
+   PRINT — Clean receipt output
+   ============================================================ */
+@media print {
+  @page { margin: 10mm; }
+  html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; }
+  #app, #loginScreen, #loadingScreen, .toast, .backdrop, .sidebar { display: none !important; }
+  .modal { display: none !important; }
+  .modal.show {
+    display: block !important;
+    position: static !important;
+    background: none !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    inset: auto !important;
+  }
+  .modal.show .modal-box {
+    display: block !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-height: none !important;
+    max-width: none !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    animation: none !important;
+  }
+  .modal.show .modal-head,
+  .modal.show .modal-foot { display: none !important; }
+  .modal.show .modal-body { display: block !important; padding: 0 !important; overflow: visible !important; }
+  #printArea { display: block !important; width: 100% !important; }
+  .receipt { max-width: 100% !important; font-size: 12px !important; }
+  .no-print { display: none !important; }
 }
 </style>
 </head>
@@ -950,7 +915,8 @@ td.text-center{text-align:center}
       <div class="edit-bill-top">
         <div class="field" style="margin-bottom:0">
           <label for="editBillCustomer">Customer name</label>
-          <input type="text" id="editBillCustomer" class="input" placeholder="Walk-in">
+          <input type="text" id="editBillCustomer" class="input" placeholder="Walk-in" list="editBillCustomerList" autocomplete="off">
+          <datalist id="editBillCustomerList"></datalist>
         </div>
         <div class="field" style="margin-bottom:0">
           <label for="editBillPayment">Payment method</label>
@@ -1081,9 +1047,6 @@ function confirmBox(msg){ return window.confirm(msg); }
 function startOfToday(){ const d = new Date(); d.setHours(0,0,0,0); return d; }
 function sumTotal(list){ return list.reduce((s, b) => s + b.total, 0); }
 
-/* ============================================================
-   BALANCE HELPER — Paid bills always show 0 balance
-   ============================================================ */
 function getBalance(b){
   if(b.status === 'PAID') return 0;
   return Math.max(0, Number(b.total||0) - Number(b.paidAmount||0));
@@ -1109,7 +1072,6 @@ function mapBill(b){
     items: (b.items || b.bill_items || []).map(mapBillItem),
     subtotal: Number(b.subtotal), discount: Number(b.discount),
     total: Number(b.total),
-    /* PAID bills are always treated as fully paid, even if old records have paid_amount = 0 */
     paidAmount: b.status === 'PAID' ? Number(b.total || 0) : Number(b.paid_amount || 0),
     payment: b.payment, status: b.status,
   };
@@ -1264,10 +1226,13 @@ const DB = {
       status = 'PAID';
     }
 
-    const { error: uErr } = await sb.from('bills').update({
+    const updateData = {
       customer: (d.customer || '').trim() || 'Walk-in',
       subtotal, discount, total, payment, status, paid_amount,
-    }).eq('id', id);
+    };
+    if(d.customerId !== undefined) updateData.customer_id = d.customerId || null;
+
+    const { error: uErr } = await sb.from('bills').update(updateData).eq('id', id);
     if(uErr) throw uErr;
 
     await sb.from('bill_items').delete().eq('bill_id', id);
@@ -2096,6 +2061,13 @@ async function openEditBill(bill){
   }));
   editOriginalItems = bill.items.map(it => ({ productId: it.productId, qty: it.qty }));
   editProductsCache = await DB.getProducts();
+  customersCache = await DB.getCustomers();
+
+  // Populate customer datalist
+  const dl = $('#editBillCustomerList');
+  if(dl){
+    dl.innerHTML = customersCache.map(c => `<option value="${esc(c.name)}"></option>`).join('');
+  }
 
   $('#editBillNo').textContent = '#' + bill.billNo;
   $('#editBillCustomer').value = bill.customer;
@@ -2288,16 +2260,47 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
   const orig = btn.innerHTML;
   btn.innerHTML = '<span>Saving...</span>';
   try{
+    const typedName = $('#editBillCustomer').value.trim();
+
+    customersCache = await DB.getCustomers();
+
+    let matchedCustomerId = null;
+    let createdNew = false;
+
+    if(typedName && typedName.toLowerCase() !== 'walk-in'){
+      const found = customersCache.find(c => c.name.toLowerCase() === typedName.toLowerCase());
+      if(found){
+        matchedCustomerId = found.id;
+      } else {
+        const addNew = window.confirm('No customer named "' + typedName + '" exists.\n\nAdd as a new customer?');
+        if(addNew){
+          const saved = await DB.addCustomer({ name: typedName, phone: '', address: '', notes: '' });
+          customersCache = await DB.getCustomers();
+          matchedCustomerId = saved.id;
+          createdNew = true;
+        }
+      }
+    }
+
     await DB.updateBill(editBillId, {
       items: editCart.map(c => ({ productId: c.productId, name: c.name, price: c.price, qty: c.qty, unit: c.unit })),
       discount: Number($('#editBillDiscount').value) || 0,
       payment:  $('#editBillPayment').value,
-      customer: $('#editBillCustomer').value.trim(),
+      customer: typedName,
+      customerId: matchedCustomerId,
     });
+
     closeModal('editBillModal');
     editBillId = null; editCart = []; editOriginalItems = []; editBillPaidAmount = 0;
     await renderBillsPage();
-    toast('Bill updated, stock adjusted', 'success');
+
+    if(createdNew){
+      toast('Bill updated · New customer added', 'success');
+    } else if(matchedCustomerId){
+      toast('Bill updated · Linked to customer', 'success');
+    } else {
+      toast('Bill updated, stock adjusted', 'success');
+    }
   } catch(e){
     console.error(e);
     toast('Failed: ' + (e.message || 'unknown'), 'error');
