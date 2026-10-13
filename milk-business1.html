@@ -327,7 +327,45 @@ td.text-center{text-align:center}
 .edit-bill-cart-foot{padding:.75rem .9rem;border-top:1px solid var(--slate-200);background:#fff}
 .edit-bill-cart-foot .total-row{font-size:.8rem;padding:.15rem 0}
 
-.edit-balance-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem .65rem;margin-top:.5rem;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600}
+/* Editable paid amount row */
+.edit-paid-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:.5rem;
+  padding:.55rem .65rem;
+  margin-top:.5rem;
+  background:var(--success-50);
+  border:1px solid var(--success-100);
+  border-radius:var(--radius-sm);
+  font-size:.8rem;
+}
+.edit-paid-row label{
+  color:var(--success-700);
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+}
+.edit-paid-row label svg{width:13px;height:13px}
+.edit-paid-row input{
+  width:100px;
+  padding:.35rem .55rem;
+  text-align:right;
+  border:1px solid var(--success-200, #a7f3d0);
+  border-radius:6px;
+  background:#fff;
+  font-size:.85rem;
+  font-weight:600;
+  color:var(--slate-900);
+  outline:none;
+}
+.edit-paid-row input:focus{
+  border-color:var(--success-600);
+  box-shadow:0 0 0 3px rgba(5,150,105,.15);
+}
+
+.edit-balance-row{display:flex;justify-content:space-between;align-items:center;padding:.55rem .65rem;margin-top:.5rem;border-radius:var(--radius-sm);font-size:.82rem;font-weight:600}
 .edit-balance-row.due{background:var(--danger-50);color:var(--danger-700);border:1px solid var(--danger-100)}
 .edit-balance-row.partial{background:var(--brand-50);color:var(--brand-700);border:1px solid var(--brand-100)}
 .edit-balance-row.paid{background:var(--success-50);color:var(--success-700);border:1px solid var(--success-100)}
@@ -335,7 +373,19 @@ td.text-center{text-align:center}
 .edit-balance-row .lbl svg{width:13px;height:13px}
 .edit-balance-row .amt{font-size:1rem;font-weight:700;letter-spacing:-.02em}
 
-.edit-balance-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--slate-500);padding:.25rem .65rem 0}
+/* Hint under the paid row when converting */
+.edit-convert-hint{
+  display:none;
+  margin-top:.4rem;
+  padding:.45rem .6rem;
+  background:var(--warning-50);
+  border:1px solid var(--warning-100);
+  border-radius:var(--radius-sm);
+  font-size:.7rem;
+  color:var(--warning-700);
+  line-height:1.4;
+}
+.edit-convert-hint.show{display:block}
 
 .pay-methods{display:grid;gap:.5rem;grid-template-columns:repeat(3,1fr);margin-top:.4rem}
 .pay-option{position:relative;cursor:pointer}
@@ -949,9 +999,17 @@ td.text-center{text-align:center}
               <input type="number" id="editBillDiscount" value="0" min="0">
             </div>
             <div class="total-row grand" style="font-size:1rem;padding-top:.5rem;margin-top:.3rem"><span>Total</span><span id="editBillTotal">₹0</span></div>
-            <div class="edit-balance-meta hidden" id="editBillPaidMeta">
-              <span>Already Paid</span><span id="editBillPaid">₹0</span>
+
+            <!-- Editable Amount Paid (only shown for Credit) -->
+            <div class="edit-paid-row hidden" id="editBillPaidRow">
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Amount Paid (₹)
+              </label>
+              <input type="number" id="editBillPaidInput" min="0" step="0.01" value="0" inputmode="decimal">
             </div>
+
+            <!-- Balance row -->
             <div class="edit-balance-row hidden" id="editBillBalanceRow">
               <span class="lbl">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -959,6 +1017,9 @@ td.text-center{text-align:center}
               </span>
               <span class="amt" id="editBillBalance">₹0</span>
             </div>
+
+            <!-- Context hint -->
+            <div class="edit-convert-hint" id="editConvertHint"></div>
           </div>
         </div>
       </div>
@@ -1215,13 +1276,21 @@ const DB = {
     const discount = Number(d.discount || 0);
     const total = Math.max(0, subtotal - discount);
     const payment = d.payment || 'Cash';
-    const oldPaid = oldBill.status === 'PAID' ? Number(oldBill.total || 0) : Number(oldBill.paid_amount || 0);
+
     let status;
     let paid_amount;
     if(payment === 'Credit'){
-      paid_amount = Math.min(oldPaid, total);
-      status = paid_amount >= total && total > 0 ? 'PAID' : (paid_amount > 0 ? 'PARTIAL' : 'PENDING');
+      // Use the paid amount provided by caller (defaults to 0)
+      paid_amount = Math.min(Math.max(0, Number(d.paidAmount || 0)), total);
+      if(total > 0 && paid_amount >= total){
+        status = 'PAID';
+      } else if(paid_amount > 0){
+        status = 'PARTIAL';
+      } else {
+        status = 'PENDING';
+      }
     } else {
+      // Cash/UPI/Other → always PAID in full
       paid_amount = total;
       status = 'PAID';
     }
@@ -2042,15 +2111,21 @@ function wireBillActions(root){
   $('#'+id).addEventListener('change', renderBillsPage);
 });
 
+/* ============================================================
+   EDIT BILL — with editable balance / paid amount
+   ============================================================ */
 let editBillId = null;
 let editCart = [];
 let editProductsCache = [];
 let editOriginalItems = [];
-let editBillPaidAmount = 0;
+let editBillOriginalPayment = 'Cash';
+let editBillOriginalStatus = 'PAID';
 
 async function openEditBill(bill){
   editBillId = bill.id;
-  editBillPaidAmount = bill.status === 'PAID' ? Number(bill.total || 0) : Number(bill.paidAmount || 0);
+  editBillOriginalPayment = bill.payment || 'Cash';
+  editBillOriginalStatus = bill.status || 'PAID';
+
   editCart = bill.items.map(it => ({
     productId: it.productId,
     name: it.name,
@@ -2063,7 +2138,6 @@ async function openEditBill(bill){
   editProductsCache = await DB.getProducts();
   customersCache = await DB.getCustomers();
 
-  // Populate customer datalist
   const dl = $('#editBillCustomerList');
   if(dl){
     dl.innerHTML = customersCache.map(c => `<option value="${esc(c.name)}"></option>`).join('');
@@ -2074,6 +2148,17 @@ async function openEditBill(bill){
   $('#editBillPayment').value = bill.payment;
   $('#editBillDiscount').value = bill.discount;
   $('#editBillProductSearch').value = '';
+
+  // Determine initial paid amount for the input
+  let initialPaid = 0;
+  if(bill.payment === 'Credit'){
+    // credit bill — use its stored paid_amount (or fallback to full if marked PAID)
+    initialPaid = bill.status === 'PAID' ? Number(bill.total || 0) : Number(bill.paidAmount || 0);
+  } else {
+    // non-credit bill — starts fully paid but if user switches to Credit we default to 0
+    initialPaid = 0;
+  }
+  $('#editBillPaidInput').value = initialPaid;
 
   renderEditBillProducts();
   renderEditBillCart();
@@ -2217,26 +2302,28 @@ function updateEditBillTotals(){
   $('#editBillTotal').textContent = fmt(total);
 
   const paymentMethod = $('#editBillPayment').value;
+  const paidRow = $('#editBillPaidRow');
   const balanceRow = $('#editBillBalanceRow');
-  const paidMeta = $('#editBillPaidMeta');
+  const paidInput = $('#editBillPaidInput');
+  const hint = $('#editConvertHint');
 
   if(paymentMethod === 'Credit'){
-    const paidSoFar = Math.min(editBillPaidAmount, total);
-    const balance = Math.max(0, total - paidSoFar);
+    paidRow.classList.remove('hidden');
 
-    if(paidSoFar > 0){
-      paidMeta.classList.remove('hidden');
-      $('#editBillPaid').textContent = fmt(paidSoFar);
-    } else {
-      paidMeta.classList.add('hidden');
-    }
+    // Clamp paid input between 0 and total
+    let paid = Number(paidInput.value);
+    if(isNaN(paid) || paid < 0){ paid = 0; }
+    if(paid > total){ paid = total; }
+    if(String(paidInput.value) !== String(paid)) paidInput.value = paid;
+
+    const balance = Math.max(0, total - paid);
 
     balanceRow.classList.remove('hidden');
     balanceRow.className = 'edit-balance-row';
-    if(balance <= 0){
+    if(total > 0 && paid >= total){
       balanceRow.classList.add('paid');
       balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Fully Paid';
-    } else if(paidSoFar > 0){
+    } else if(paid > 0){
       balanceRow.classList.add('partial');
       balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
     } else {
@@ -2244,15 +2331,73 @@ function updateEditBillTotals(){
       balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
     }
     $('#editBillBalance').textContent = fmt(balance);
+
+    // Context hint
+    if(editBillOriginalPayment !== 'Credit'){
+      hint.textContent = '💡 This bill was previously marked as ' + editBillOriginalPayment + '. Switching to Credit will mark it as Pending (or Partial if you enter an amount paid).';
+      hint.classList.add('show');
+    } else {
+      hint.classList.remove('show');
+      hint.textContent = '';
+    }
   } else {
+    paidRow.classList.add('hidden');
     balanceRow.classList.add('hidden');
-    paidMeta.classList.add('hidden');
+
+    if(editBillOriginalPayment === 'Credit' && (editBillOriginalStatus === 'PENDING' || editBillOriginalStatus === 'PARTIAL')){
+      hint.textContent = '💡 This bill was Credit. Switching to ' + paymentMethod + ' will mark it as fully Paid (balance ₹0).';
+      hint.classList.add('show');
+    } else {
+      hint.classList.remove('show');
+      hint.textContent = '';
+    }
   }
 }
 
 $('#editBillProductSearch').addEventListener('input', e => renderEditBillProducts(e.target.value));
 $('#editBillDiscount').addEventListener('input', updateEditBillTotals);
-$('#editBillPayment').addEventListener('change', updateEditBillTotals);
+
+$('#editBillPaidInput').addEventListener('input', () => {
+  // Recalculate balance as user types
+  const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
+  const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
+  const total = Math.max(0, sub - disc);
+  let paid = Number($('#editBillPaidInput').value) || 0;
+  if(paid < 0) paid = 0;
+  if(paid > total) paid = total;
+
+  const balanceRow = $('#editBillBalanceRow');
+  const balance = Math.max(0, total - paid);
+  if(balanceRow){
+    balanceRow.className = 'edit-balance-row';
+    if(total > 0 && paid >= total){
+      balanceRow.classList.add('paid');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> Fully Paid';
+    } else if(paid > 0){
+      balanceRow.classList.add('partial');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
+    } else {
+      balanceRow.classList.add('due');
+      balanceRow.querySelector('.lbl').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Balance Due';
+    }
+    $('#editBillBalance').textContent = fmt(balance);
+  }
+});
+
+$('#editBillPayment').addEventListener('change', () => {
+  const newPayment = $('#editBillPayment').value;
+  const paidInput = $('#editBillPaidInput');
+
+  if(newPayment === 'Credit'){
+    // If it was NOT Credit before, reset paid to 0 (fresh pending bill)
+    if(editBillOriginalPayment !== 'Credit'){
+      paidInput.value = 0;
+    }
+    // If it was Credit before, keep whatever value is in the input (which was set at open)
+  }
+  // If switching to Cash/UPI/Other, the paid input is hidden and status becomes PAID automatically
+  updateEditBillTotals();
+});
 
 $('#editBillSaveBtn').addEventListener('click', async () => {
   if(!editCart.length){ toast('Bill cannot be empty', 'error'); return; }
@@ -2261,6 +2406,7 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
   btn.innerHTML = '<span>Saving...</span>';
   try{
     const typedName = $('#editBillCustomer').value.trim();
+    const paymentMethod = $('#editBillPayment').value;
 
     customersCache = await DB.getCustomers();
 
@@ -2282,22 +2428,39 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
       }
     }
 
+    // Calculate paid amount to send
+    const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
+    const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
+    const total = Math.max(0, sub - disc);
+    let paidToSend = 0;
+    if(paymentMethod === 'Credit'){
+      paidToSend = Math.min(Math.max(0, Number($('#editBillPaidInput').value) || 0), total);
+    } else {
+      paidToSend = total; // Cash/UPI/Other — fully paid
+    }
+
     await DB.updateBill(editBillId, {
       items: editCart.map(c => ({ productId: c.productId, name: c.name, price: c.price, qty: c.qty, unit: c.unit })),
-      discount: Number($('#editBillDiscount').value) || 0,
-      payment:  $('#editBillPayment').value,
+      discount: disc,
+      payment:  paymentMethod,
       customer: typedName,
       customerId: matchedCustomerId,
+      paidAmount: paidToSend,
     });
 
     closeModal('editBillModal');
-    editBillId = null; editCart = []; editOriginalItems = []; editBillPaidAmount = 0;
+    editBillId = null; editCart = []; editOriginalItems = [];
+
     await renderBillsPage();
 
     if(createdNew){
       toast('Bill updated · New customer added', 'success');
     } else if(matchedCustomerId){
       toast('Bill updated · Linked to customer', 'success');
+    } else if(paymentMethod === 'Credit' && paidToSend === 0){
+      toast('Bill updated · Marked as Pending', 'success');
+    } else if(paymentMethod === 'Credit' && paidToSend > 0 && paidToSend < total){
+      toast('Bill updated · Partial payment recorded', 'success');
     } else {
       toast('Bill updated, stock adjusted', 'success');
     }
