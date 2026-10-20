@@ -114,7 +114,7 @@ img,svg,table{max-width:100%}
 
 .topbar{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--slate-200);padding:.85rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:60px}
 .topbar-left{display:flex;align-items:center;gap:.75rem;min-width:0;flex:1}
-.topbar-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0}
+.topbar-right{display:flex;align-items:center;gap:.75rem;flex-shrink:0;flex-wrap:wrap}
 .topbar h1{font-size:1.05rem;font-weight:600;letter-spacing:-.015em;color:var(--slate-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topbar-date{font-size:.8rem;color:var(--slate-500);white-space:nowrap}
 .sidebar-toggle{display:none;width:36px;height:36px;border-radius:var(--radius-sm);border:1px solid var(--slate-200);background:#fff;color:var(--slate-600);align-items:center;justify-content:center;flex-shrink:0}
@@ -352,7 +352,7 @@ td.text-center{text-align:center}
   width:100px;
   padding:.35rem .55rem;
   text-align:right;
-  border:1px solid var(--success-200, #a7f3d0);
+  border:1px solid #a7f3d0;
   border-radius:6px;
   background:#fff;
   font-size:.85rem;
@@ -820,8 +820,19 @@ td.text-center{text-align:center}
     <section id="page-reports" class="page hidden">
       <div class="topbar">
         <div class="topbar-left"><button class="sidebar-toggle" data-toggle-menu aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><h1>Reports</h1></div>
-        <div class="topbar-right">
-          <select id="reportPeriod" class="input" style="max-width:180px"><option value="today">Today</option><option value="week">Last 7 days</option><option value="month" selected>This Month</option><option value="all">All Time</option></select>
+        <div class="topbar-right" style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+          <select id="reportPeriod" class="input" style="max-width:180px">
+            <option value="today">Today</option>
+            <option value="week">Last 7 days</option>
+            <option value="month" selected>This Month</option>
+            <option value="all">All Time</option>
+            <option value="custom">Custom Range</option>
+          </select>
+          <div id="customDateWrap" class="hidden" style="display:flex;align-items:center;gap:0.5rem">
+            <input type="date" id="reportStartDate" class="input" style="width:140px">
+            <span style="color:var(--slate-500);font-size:0.85rem">to</span>
+            <input type="date" id="reportEndDate" class="input" style="width:140px">
+          </div>
         </div>
       </div>
       <div class="stats-grid">
@@ -1000,7 +1011,6 @@ td.text-center{text-align:center}
             </div>
             <div class="total-row grand" style="font-size:1rem;padding-top:.5rem;margin-top:.3rem"><span>Total</span><span id="editBillTotal">₹0</span></div>
 
-            <!-- Editable Amount Paid (only shown for Credit) -->
             <div class="edit-paid-row hidden" id="editBillPaidRow">
               <label>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
@@ -1009,7 +1019,6 @@ td.text-center{text-align:center}
               <input type="number" id="editBillPaidInput" min="0" step="0.01" value="0" inputmode="decimal">
             </div>
 
-            <!-- Balance row -->
             <div class="edit-balance-row hidden" id="editBillBalanceRow">
               <span class="lbl">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -1018,7 +1027,6 @@ td.text-center{text-align:center}
               <span class="amt" id="editBillBalance">₹0</span>
             </div>
 
-            <!-- Context hint -->
             <div class="edit-convert-hint" id="editConvertHint"></div>
           </div>
         </div>
@@ -1192,6 +1200,7 @@ const DB = {
     opts = opts || {};
     let q = sb.from('bills').select('*, items:bill_items(*)').order('created_at', { ascending: false });
     if(opts.since) q = q.gte('created_at', opts.since);
+    if(opts.until) q = q.lte('created_at', opts.until);
     if(opts.limit) q = q.limit(opts.limit);
     if(opts.customerId) q = q.eq('customer_id', opts.customerId);
     const { data, error } = await q;
@@ -1280,7 +1289,6 @@ const DB = {
     let status;
     let paid_amount;
     if(payment === 'Credit'){
-      // Use the paid amount provided by caller (defaults to 0)
       paid_amount = Math.min(Math.max(0, Number(d.paidAmount || 0)), total);
       if(total > 0 && paid_amount >= total){
         status = 'PAID';
@@ -1290,7 +1298,6 @@ const DB = {
         status = 'PENDING';
       }
     } else {
-      // Cash/UPI/Other → always PAID in full
       paid_amount = total;
       status = 'PAID';
     }
@@ -2149,13 +2156,10 @@ async function openEditBill(bill){
   $('#editBillDiscount').value = bill.discount;
   $('#editBillProductSearch').value = '';
 
-  // Determine initial paid amount for the input
   let initialPaid = 0;
   if(bill.payment === 'Credit'){
-    // credit bill — use its stored paid_amount (or fallback to full if marked PAID)
     initialPaid = bill.status === 'PAID' ? Number(bill.total || 0) : Number(bill.paidAmount || 0);
   } else {
-    // non-credit bill — starts fully paid but if user switches to Credit we default to 0
     initialPaid = 0;
   }
   $('#editBillPaidInput').value = initialPaid;
@@ -2310,7 +2314,6 @@ function updateEditBillTotals(){
   if(paymentMethod === 'Credit'){
     paidRow.classList.remove('hidden');
 
-    // Clamp paid input between 0 and total
     let paid = Number(paidInput.value);
     if(isNaN(paid) || paid < 0){ paid = 0; }
     if(paid > total){ paid = total; }
@@ -2332,7 +2335,6 @@ function updateEditBillTotals(){
     }
     $('#editBillBalance').textContent = fmt(balance);
 
-    // Context hint
     if(editBillOriginalPayment !== 'Credit'){
       hint.textContent = '💡 This bill was previously marked as ' + editBillOriginalPayment + '. Switching to Credit will mark it as Pending (or Partial if you enter an amount paid).';
       hint.classList.add('show');
@@ -2358,7 +2360,6 @@ $('#editBillProductSearch').addEventListener('input', e => renderEditBillProduct
 $('#editBillDiscount').addEventListener('input', updateEditBillTotals);
 
 $('#editBillPaidInput').addEventListener('input', () => {
-  // Recalculate balance as user types
   const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
   const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
   const total = Math.max(0, sub - disc);
@@ -2389,13 +2390,10 @@ $('#editBillPayment').addEventListener('change', () => {
   const paidInput = $('#editBillPaidInput');
 
   if(newPayment === 'Credit'){
-    // If it was NOT Credit before, reset paid to 0 (fresh pending bill)
     if(editBillOriginalPayment !== 'Credit'){
       paidInput.value = 0;
     }
-    // If it was Credit before, keep whatever value is in the input (which was set at open)
   }
-  // If switching to Cash/UPI/Other, the paid input is hidden and status becomes PAID automatically
   updateEditBillTotals();
 });
 
@@ -2428,7 +2426,6 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
       }
     }
 
-    // Calculate paid amount to send
     const sub = editCart.reduce((s, c) => s + c.price * c.qty, 0);
     const disc = Math.max(0, Number($('#editBillDiscount').value) || 0);
     const total = Math.max(0, sub - disc);
@@ -2436,7 +2433,7 @@ $('#editBillSaveBtn').addEventListener('click', async () => {
     if(paymentMethod === 'Credit'){
       paidToSend = Math.min(Math.max(0, Number($('#editBillPaidInput').value) || 0), total);
     } else {
-      paidToSend = total; // Cash/UPI/Other — fully paid
+      paidToSend = total;
     }
 
     await DB.updateBill(editBillId, {
@@ -2541,13 +2538,42 @@ $('#deleteBillBtn').addEventListener('click', async () => {
 
 async function renderReports(){
   const period = $('#reportPeriod').value;
-  let since;
+  let since, until;
+
   if(period === 'today'){ since = startOfToday().toISOString(); }
   else if(period === 'week'){ since = new Date(Date.now() - 7 * 86400000).toISOString(); }
   else if(period === 'month'){ const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); since = d.toISOString(); }
+  else if(period === 'custom'){
+    const startVal = $('#reportStartDate').value;
+    const endVal = $('#reportEndDate').value;
+    if(startVal) since = new Date(startVal + 'T00:00:00').toISOString();
+    if(endVal) until = new Date(endVal + 'T23:59:59.999').toISOString();
+  }
+
+  if(period === 'custom'){
+    $('#customDateWrap').classList.remove('hidden');
+    if(!$('#reportStartDate').value || !$('#reportEndDate').value){
+      const today = new Date();
+      const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+      const formatDate = (d) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      };
+      if(!$('#reportStartDate').value) $('#reportStartDate').value = formatDate(firstDay);
+      if(!$('#reportEndDate').value) $('#reportEndDate').value = formatDate(today);
+      since = new Date($('#reportStartDate').value + 'T00:00:00').toISOString();
+      until = new Date($('#reportEndDate').value + 'T23:59:59.999').toISOString();
+    }
+  } else {
+    $('#customDateWrap').classList.add('hidden');
+  }
+
   let bills, products;
-  try{ [bills, products] = await Promise.all([DB.getBills({ since }), DB.getProducts()]); }
+  try{ [bills, products] = await Promise.all([DB.getBills({ since, until }), DB.getProducts()]); }
   catch(e){ toast('Failed', 'error'); return; }
+  
   const totalSales = sumTotal(bills);
   const totalItems = bills.reduce((s, b) => s + b.items.reduce((x, i) => x + i.qty, 0), 0);
   $('#rSales').textContent = fmt(totalSales);
@@ -2576,7 +2602,10 @@ async function renderReports(){
     return `<tr><td class="td-strong">${esc(p.name)}</td><td class="text-end">${fmt(p.price)}</td><td class="text-center">${p.stock}</td><td class="text-end td-strong">${fmt(p.stock * p.price)}</td><td class="text-center"><span class="badge ${cls}">${status}</span></td></tr>`;
   }).join('') : '<tr><td colspan="5"><div class="empty"><div class="empty-title">No products</div></div></td></tr>';
 }
+
 $('#reportPeriod').addEventListener('change', renderReports);
+$('#reportStartDate').addEventListener('change', renderReports);
+$('#reportEndDate').addEventListener('change', renderReports);
 
 sb.auth.onAuthStateChange((event) => { if(event === 'SIGNED_OUT') showLogin(); });
 
