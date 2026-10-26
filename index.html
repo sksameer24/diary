@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
@@ -327,7 +328,6 @@ td.text-center{text-align:center}
 .edit-bill-cart-foot{padding:.75rem .9rem;border-top:1px solid var(--slate-200);background:#fff}
 .edit-bill-cart-foot .total-row{font-size:.8rem;padding:.15rem 0}
 
-/* Editable paid amount row */
 .edit-paid-row{
   display:flex;
   justify-content:space-between;
@@ -373,7 +373,6 @@ td.text-center{text-align:center}
 .edit-balance-row .lbl svg{width:13px;height:13px}
 .edit-balance-row .amt{font-size:1rem;font-weight:700;letter-spacing:-.02em}
 
-/* Hint under the paid row when converting */
 .edit-convert-hint{
   display:none;
   margin-top:.4rem;
@@ -824,8 +823,8 @@ td.text-center{text-align:center}
           <select id="reportPeriod" class="input" style="max-width:180px">
             <option value="today">Today</option>
             <option value="week">Last 7 days</option>
-            <option value="month" selected>This Month</option>
-            <option value="all">All Time</option>
+            <option value="month" selected>Last 30 days</option>
+            <option value="year">Last 12 months</option>
             <option value="custom">Custom Range</option>
           </select>
           <div id="customDateWrap" class="hidden" style="display:flex;align-items:center;gap:0.5rem">
@@ -835,6 +834,22 @@ td.text-center{text-align:center}
           </div>
         </div>
       </div>
+      
+      <!-- CHART -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Sales Trend</div>
+            <div class="card-title-sub">Revenue over time</div>
+          </div>
+        </div>
+        <div class="card-body" style="padding:1rem">
+          <div style="position:relative;height:300px;width:100%">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
       <div class="stats-grid">
         <div class="stat"><div class="stat-head"><span class="stat-label">Total Sales</span><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div></div><div class="stat-value" id="rSales">₹0</div></div>
         <div class="stat"><div class="stat-head"><span class="stat-label">Total Bills</span><div class="stat-icon brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg></div></div><div class="stat-value" id="rBills">0</div></div>
@@ -1097,6 +1112,8 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.prototype.slice.call(document.querySelectorAll(s));
 const fmt = n => '₹' + Number(n||0).toLocaleString('en-IN');
 const esc = s => String(s==null?'':s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let salesChart = null;
 
 function toast(msg, type){
   const el = $('#toast');
@@ -2119,7 +2136,7 @@ function wireBillActions(root){
 });
 
 /* ============================================================
-   EDIT BILL — with editable balance / paid amount
+   EDIT BILL
    ============================================================ */
 let editBillId = null;
 let editCart = [];
@@ -2539,10 +2556,12 @@ $('#deleteBillBtn').addEventListener('click', async () => {
 async function renderReports(){
   const period = $('#reportPeriod').value;
   let since, until;
+  let chartLabels = [], chartData = [];
 
   if(period === 'today'){ since = startOfToday().toISOString(); }
   else if(period === 'week'){ since = new Date(Date.now() - 7 * 86400000).toISOString(); }
-  else if(period === 'month'){ const d = new Date(); d.setDate(1); d.setHours(0,0,0,0); since = d.toISOString(); }
+  else if(period === 'month'){ since = new Date(Date.now() - 30 * 86400000).toISOString(); }
+  else if(period === 'year'){ since = new Date(Date.now() - 365 * 86400000).toISOString(); }
   else if(period === 'custom'){
     const startVal = $('#reportStartDate').value;
     const endVal = $('#reportEndDate').value;
@@ -2573,13 +2592,112 @@ async function renderReports(){
   let bills, products;
   try{ [bills, products] = await Promise.all([DB.getBills({ since, until }), DB.getProducts()]); }
   catch(e){ toast('Failed', 'error'); return; }
-  
+
+  // --- Build Chart Data ---
+  if(period === 'today'){
+    // Group by hour (e.g. 8 AM, 9 AM)
+    for(let i=0; i<24; i++){
+      chartLabels.push(i === 0 ? '12 AM' : i < 12 ? i + ' AM' : i === 12 ? '12 PM' : (i-12) + ' PM');
+      chartData.push(0);
+    }
+    bills.forEach(b => {
+      const hr = new Date(b.createdAt).getHours();
+      chartData[hr] += b.total;
+    });
+  } 
+  else if(period === 'week' || (period === 'custom' && (new Date(until || Date.now()) - new Date(since))/86400000 <= 31)){
+    // Group by day
+    const days = Math.ceil((new Date(until || Date.now()) - new Date(since)) / 86400000) || 1;
+    const start = new Date(since);
+    for(let i=0; i<=days; i++){
+      const d = new Date(start.getTime() + i*86400000);
+      if(d > new Date(until || Date.now())) break;
+      chartLabels.push(d.toLocaleDateString('en-IN', {day:'numeric', month:'short'}));
+      chartData.push(0);
+    }
+    bills.forEach(b => {
+      const idx = chartLabels.indexOf(new Date(b.createdAt).toLocaleDateString('en-IN', {day:'numeric', month:'short'}));
+      if(idx !== -1) chartData[idx] += b.total;
+    });
+  }
+  else {
+    // Group by month (Last 30 days or 12 months)
+    const months = period === 'year' ? 12 : 1;
+    const now = new Date();
+    for(let i=months-1; i>=0; i--){
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      chartLabels.push(d.toLocaleDateString('en-IN', {month:'short', year:'numeric'}));
+      chartData.push(0);
+    }
+    bills.forEach(b => {
+      const idx = chartLabels.indexOf(new Date(b.createdAt).toLocaleDateString('en-IN', {month:'short', year:'numeric'}));
+      if(idx !== -1) chartData[idx] += b.total;
+    });
+  }
+
+  // Render Chart
+  if(salesChart) salesChart.destroy();
+  const ctx = document.getElementById('salesChart').getContext('2d');
+  salesChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        label: 'Sales (₹)',
+        data: chartData,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        borderWidth: 2,
+        pointBackgroundColor: '#6366f1',
+        pointBorderColor: '#fff',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          padding: 10,
+          titleFont: { family: 'Inter', size: 12 },
+          bodyFont: { family: 'Inter', size: 13, weight: 'bold' },
+          callbacks: {
+            label: function(context) {
+              return '₹' + Number(context.raw).toLocaleString('en-IN');
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#e2e8f0' },
+          ticks: {
+            font: { family: 'Inter', size: 11 },
+            callback: function(value) { return '₹' + value; }
+          }
+        },
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'Inter', size: 11 } }
+        }
+      }
+    }
+  });
+
+  // --- Existing Stats & Tables ---
   const totalSales = sumTotal(bills);
   const totalItems = bills.reduce((s, b) => s + b.items.reduce((x, i) => x + i.qty, 0), 0);
   $('#rSales').textContent = fmt(totalSales);
   $('#rBills').textContent = bills.length;
   $('#rAvg').textContent   = fmt(bills.length ? Math.round(totalSales / bills.length) : 0);
   $('#rItems').textContent = totalItems;
+  
   const payMap = {};
   bills.forEach(b => { payMap[b.payment] = payMap[b.payment] || { count: 0, amount: 0 }; payMap[b.payment].count++; payMap[b.payment].amount += b.total; });
   const pb = $('#rPaymentBody');
@@ -2589,10 +2707,12 @@ async function renderReports(){
     const badge = isCredit ? 'badge-credit' : 'badge-neutral';
     return `<tr><td><span class="badge ${badge}">${esc(k)}</span></td><td class="text-end">${payMap[k].count}</td><td class="text-end td-strong">${fmt(payMap[k].amount)}</td></tr>`;
   }).join('') : '<tr><td colspan="3"><div class="empty"><div class="empty-title">No data</div></div></td></tr>';
+  
   const prodMap = {};
   bills.forEach(b => b.items.forEach(it => { prodMap[it.name] = prodMap[it.name] || { qty: 0, revenue: 0 }; prodMap[it.name].qty += it.qty; prodMap[it.name].revenue += it.subtotal; }));
   const arr = Object.keys(prodMap).map(k => [k, prodMap[k]]).sort((a, b) => b[1].revenue - a[1].revenue);
   $('#rProductBody').innerHTML = arr.length ? arr.map(item => `<tr><td class="td-strong">${esc(item[0])}</td><td class="text-end">${item[1].qty}</td><td class="text-end td-strong">${fmt(item[1].revenue)}</td></tr>`).join('') : '<tr><td colspan="3"><div class="empty"><div class="empty-title">No data</div></div></td></tr>';
+  
   const sb_ = $('#rStockBody');
   sb_.innerHTML = products.length ? products.map(p => {
     let status, cls;
